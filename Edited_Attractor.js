@@ -1,4 +1,4 @@
-// 引力・斥力モデル
+
 var num = 1000;
 var vx = new Array(num);
 var vy = new Array(num);
@@ -7,9 +7,9 @@ var y = new Array(num);
 var ax = new Array(num);
 var ay = new Array(num);
 
-var magnetism = 10.0; //引力の強さ マイナスにすると斥力になる。
-var radius = 1 ; //描画する円の半径
-var gensoku = 0.95; // 粒子の移動を減速させる
+var magnetism = 10.0; 
+var radius = 1 ; 
+var gensoku = 0.95; 
 
 function setup(){
   createCanvas(windowWidth,windowHeight);
@@ -35,23 +35,23 @@ function draw(){
   rect(0,0,width,height);
   
   for(var i=0; i<num; i++){
-    var distance = dist(touchX, touchY, x[i], y[i]); //dist(x1,y1,x2,y2) ２点間の距離を求める関数
-    //加速度は引力の中心からの距離の二乗に反比例する。
-    if(distance > 3){ //あまりマウスに近すぎる場合は加速度を更新しない
+    var distance = dist(touchX, touchY, x[i], y[i]); 
+
+    if(distance > 3){
       ax[i] = magnetism * (touchX - x[i]) / (distance * distance); 
       ay[i] = magnetism * (touchY - y[i]) / (distance * distance);
     }
-    vx[i] += ax[i]; // 1フレームあたりaxだけ速度vxを増加する。
-    vy[i] += ay[i]; // 1フレームあたりayだけ速度vyを増加する.
+    vx[i] += ax[i]; 
+    vy[i] += ay[i]; 
     
     vx[i] = vx[i]*gensoku;
     vy[i] = vy[i]*gensoku;
     
-    x[i] += vx[i];  // 1フレームあたりvyピクセル進ませる。
-    y[i] += vy[i];  // 1フレームあたりvyピクセル進ませる。
+    x[i] += vx[i]; 
+    y[i] += vy[i]; 
     
-    var sokudo = dist(0,0,vx[i],vy[i]); // 速度のX,Y成分から速度を求める
-    var r = map(sokudo, 0, 5, 0, 255); //速度に応じた色を計算
+    var sokudo = dist(0,0,vx[i],vy[i]); 
+    var r = map(sokudo, 0, 5, 0, 255); 
     var g = map(sokudo, 0,5, 64, 255);
     var b = map(sokudo, 0,5, 128, 255);
     fill(r, g, b, 32);
