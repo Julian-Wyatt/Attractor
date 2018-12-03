@@ -1,61 +1,95 @@
 
-var num = 1000;
-var vx = new Array(num);
-var vy = new Array(num);
-var x = new Array(num);
-var y = new Array(num);
-var ax = new Array(num);
-var ay = new Array(num);
+//Particle class in order to define attributes for each unqiue particle
+//For example - size, and spawn position
+class Particle {
 
-var magnetism = 10.0; 
-var radius = 1 ; 
-var gensoku = 0.95; 
+    constructor (xPos, yPos, size) {
 
-function setup(){
-  createCanvas(windowWidth,windowHeight);
-  noStroke(); 
-  fill(0);
-  ellipseMode(RADIUS);
-  background(0);
-  blendMode(ADD);
-  
-  for(var i =0; i< num; i++){
-    x[i] = random(width);
-    y[i] = random(height);
-    vx[i] = 0;
-    vy[i] = 0;
-    ax[i] = 0;
-    ay[i] = 0;
-  }
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.size = size;
+        
+    }   
+    
+    draw(){
+        ellipse(this.xPos,this.yPos,this.size,this.size);
+    }
+
 }
 
+class Simulation{
 
-function draw(){
-  fill(0,0,0);
-  rect(0,0,width,height);
-  
-  for(var i=0; i<num; i++){
-    var distance = dist(touchX, touchY, x[i], y[i]); 
+    constructor (radius, magnetism, deceleration,total){
+        this.magnetism = magnetism;
+        this.deceleration = deceleration;
+        this.radius = radius;
+        this.total = total;
+        let xAccn = new Array(this.total),
+            xPos = new Array(this.total),
+            xSpeed = new Array(this.total),
+            yAccn = new Array(this.total),
+            yPos = new Array(this.total),
+            ySpeed = new Array(this.total)
+            
 
-    if(distance > 3){
-      ax[i] = magnetism * (touchX - x[i]) / (distance * distance); 
-      ay[i] = magnetism * (touchY - y[i]) / (distance * distance);
+        for (let i=0;i<this.total;i++){
+            xPos[i] = random(width);
+            yPos[i] = random(height);
+            xSpeed[i] = 0;
+            ySpeed[i] = 0;
+            xAccn[i] = 0;
+            yAccn[i] = 0;
+        }
+
+        this.setup()
+        this.draw()
     }
-    vx[i] += ax[i]; 
-    vy[i] += ay[i]; 
-    
-    vx[i] = vx[i]*gensoku;
-    vy[i] = vy[i]*gensoku;
-    
-    x[i] += vx[i]; 
-    y[i] += vy[i]; 
-    
-    var sokudo = dist(0,0,vx[i],vy[i]); 
-    var r = map(sokudo, 0, 5, 0, 255); 
-    var g = map(sokudo, 0,5, 64, 255);
-    var b = map(sokudo, 0,5, 128, 255);
-    fill(r, g, b, 32);
-    ellipse(x[i],y[i],radius,radius);
-  }
+
+
+    setup() {
+
+
+        createCanvas(windowWidth,windowHeight);
+        noStroke(); 
+        fill(0);
+        ellipseMode(RADIUS);
+        background(0);
+        blendMode(ADD);
+
+    }
+
+
+
+    draw(){
+
+
+        fill(0,0,0);
+        rect(100,100,width,height);
   
+        for(var i=0; i<this.total; i++){
+            var distance = dist(mouseX, mouseY, this.xPos[i], this.yPos[i]); 
+
+            if(distance > 3){
+                this.xAccn[i] = this.magnetism * (mouseX - this.xPos[i]) / (distance * distance); 
+                this.yAccn[i] = this.magnetism * (mouseY - this.yPos[i]) / (distance * distance);
+            }
+            this.xSpeed[i] += this.xAccn[i]; 
+            this.ySpeed[i] += this.yAccn[i]; 
+    
+            this.xSpeed[i] *= this.deceleration;
+            this.ySpeed[i] *= this.deceleration;
+    
+            this.xPos[i] += this.xSpeed[i]; 
+            this.yPos[i] += this.ySpeed[i]; 
+    
+            var speed = dist(0,0,this.xSpeed[i],this.ySpeed[i]); 
+            var red = map(speed, 0, 5, 0, 255); 
+            var green = map(speed, 0,5, 64, 255);
+            var blue = map(speed, 0,5, 128, 255);
+            fill(red, green, blue, 32);
+            ellipse(this.xPos[i],this.yPos[i],this.radius,this.radius);
+        }
+    //let particle = new Particle(100,100,100,100);
+    }
+
 }
