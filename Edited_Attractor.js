@@ -3,59 +3,76 @@
 //For example - size, and spawn position
 class Particle {
 
-    constructor (xPos, yPos, size) {
+    constructor (xPos, yPos, size,xSpeed,ySpeed,xAccn,yAccn) {
 
         this.xPos = xPos;
         this.yPos = yPos;
         this.size = size;
-        
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.xAccn = xAccn;
+        this.yAccn = yAccn;
+        this.draw();
+        this.color();
+
+        this.flip = Math.round(Math.random()*2) * 2 - 1;
     }   
     
     draw(){
         ellipse(this.xPos,this.yPos,this.size,this.size);
+    }
+    color(){
+        let speed = dist(0,0,this.xSpeed,this.ySpeed);
+        var red = map(speed, 0, 5, 0, 255); 
+        var green = map(speed, 0,5, 64, 255);
+        var blue = map(speed, 0,5, 128, 255);
+        fill(red, green, blue, 32);
     }
 
 }
 
 class Simulation{
 
-    constructor (radius, magnetism, deceleration,total){
+    constructor (radius, magnetism, deceleration,total,noiseScale, RATE, mouseX,mouseY){
         this.magnetism = magnetism;
         this.deceleration = deceleration;
         this.radius = radius;
         this.total = total;
-        let xAccn = new Array(this.total),
-            xPos = new Array(this.total),
-            xSpeed = new Array(this.total),
-            yAccn = new Array(this.total),
-            yPos = new Array(this.total),
-            ySpeed = new Array(this.total)
-            
+        /*
+        this.xAccn = new Array(this.total);
+        this.xPos = new Array(this.total);
+        this.xSpeed = new Array(this.total);
+        this.yAccn = new Array(this.total);
+        this.yPos = new Array(this.total);
+        this.ySpeed = new Array(this.total);
+        */
+        this.particles = new Array(this.total);
+        this.noiseScale = noiseScale;
+        
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+        this.rate = RATE;
 
         for (let i=0;i<this.total;i++){
-            xPos[i] = random(width);
-            yPos[i] = random(height);
-            xSpeed[i] = 0;
-            ySpeed[i] = 0;
-            xAccn[i] = 0;
-            yAccn[i] = 0;
+            
+            this.particles[i] = new Particle(Math.round(Math.random()*(windowWidth+100)),Math.round(Math.random()*(windowHeight+100)),radius,0,0);
         }
 
-        this.setup()
-        this.draw()
+        //this.setup()
+        //this.draw();
     }
 
 
     setup() {
 
-
-        createCanvas(windowWidth,windowHeight);
+       
+        createCanvas(windowWidth+100,windowHeight+200);
         noStroke(); 
         fill(0);
         ellipseMode(RADIUS);
         background(0);
         blendMode(ADD);
-
+        
     }
 
 
@@ -64,32 +81,67 @@ class Simulation{
 
 
         fill(0,0,0);
-        rect(100,100,width,height);
+        
   
-        for(var i=0; i<this.total; i++){
-            var distance = dist(mouseX, mouseY, this.xPos[i], this.yPos[i]); 
+        for(let i=0; i<this.total; i++){
+            let distance = dist(this.mouseX, this.mouseY, this.particles[i].xPos, this.particles[i].yPos); 
 
             if(distance > 3){
-                this.xAccn[i] = this.magnetism * (mouseX - this.xPos[i]) / (distance * distance); 
-                this.yAccn[i] = this.magnetism * (mouseY - this.yPos[i]) / (distance * distance);
+                this.particles[i].xAccn = this.magnetism * (this.mouseX - this.particles[i].xPos) / (distance * distance); 
+                this.particles[i].yAccn = this.magnetism * (this.mouseY - this.particles[i].yPos) / (distance * distance);
             }
-            this.xSpeed[i] += this.xAccn[i]; 
-            this.ySpeed[i] += this.yAccn[i]; 
+            this.particles[i].xSpeed += this.particles[i].xAccn; 
+            this.particles[i].ySpeed += this.particles[i].yAccn; 
     
-            this.xSpeed[i] *= this.deceleration;
-            this.ySpeed[i] *= this.deceleration;
+            this.particles[i].xSpeed *= this.deceleration;
+            this.particles[i].ySpeed *= this.deceleration;
     
-            this.xPos[i] += this.xSpeed[i]; 
-            this.yPos[i] += this.ySpeed[i]; 
-    
-            var speed = dist(0,0,this.xSpeed[i],this.ySpeed[i]); 
-            var red = map(speed, 0, 5, 0, 255); 
-            var green = map(speed, 0,5, 64, 255);
-            var blue = map(speed, 0,5, 128, 255);
-            fill(red, green, blue, 32);
-            ellipse(this.xPos[i],this.yPos[i],this.radius,this.radius);
+            this.particles[i].xPos += this.particles[i].xSpeed; 
+            this.particles[i].yPos += this.particles[i].ySpeed; 
+
+            
+            this.particles[i].draw();
+            this.particles[i].color();
+
         }
     //let particle = new Particle(100,100,100,100);
     }
 
+    perlinNoise(){
+        for (let i=0;i<this.total;i++){
+            let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.flip;
+            this.particles[i].ySpeed = Math.cos(angle)*this.rate;
+            this.particles[i].xSpeed = Math.sin(angle)*this.rate;
+            this.particles[i].xPos += this.particles[i].xSpeed; 
+            this.particles[i].yPos += this.particles[i].ySpeed; 
+        }
+    }
+
+   
+    
+
+}
+
+let attractor
+
+
+function setup(){
+    attractor = new Simulation(1,10,0.95,100,800,10);
+    attractor.setup();
+
+}
+function draw(){
+
+    if (mouseIsPressed==true){
+
+        attractor.mouseX = mouseX;
+        attractor.mouseY = mouseY;
+        attractor.draw();
+
+    }
+    else {
+        attractor.perlinNoise();
+    }
+    
+     
 }
