@@ -1,4 +1,4 @@
-
+/*eslint-nodef*/
 //Particle class in order to define attributes for each unqiue particle
 //For example - size, and spawn position
 class Particle {
@@ -14,19 +14,29 @@ class Particle {
         this.yAccn = yAccn;
         this.draw();
         this.color();
-
         this.flip = Math.round(Math.random()*2) * 2 - 1;
+        this.maxLife = random()*10+5;
+        this.currLife = this.maxLife;
+
     }   
     
     draw(){
         ellipse(this.xPos,this.yPos,this.size,this.size);
     }
     color(){
-        let speed = dist(0,0,this.xSpeed,this.ySpeed);
-        var red = map(speed, 0, 5, 0, 255); 
-        var green = map(speed, 0,5, 64, 255);
-        var blue = map(speed, 0,5, 128, 255);
+
+//        let speed = dist(0,0,this.xSpeed,this.ySpeed);
+
+        var red = map(200, 0, 5, 0, 255); 
+        var green = map(10, 0,5, 64, 255);
+        var blue = map(255, 0,5, 128, 255);
+
         fill(red, green, blue, 32);
+    }
+    respawn(){
+        this.currLife = this.maxLife;
+        this.xPos = random() * (windowWidth+100);
+        this.yPos = random() * (windowHeight+200);
     }
 
 }
@@ -34,6 +44,7 @@ class Particle {
 class Simulation{
 
     constructor (radius, magnetism, deceleration,total,noiseScale, RATE, mouseX,mouseY){
+
         this.magnetism = magnetism;
         this.deceleration = deceleration;
         this.radius = radius;
@@ -52,10 +63,11 @@ class Simulation{
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.rate = RATE;
+        
 
         for (let i=0;i<this.total;i++){
             
-            this.particles[i] = new Particle(Math.round(Math.random()*(windowWidth+100)),Math.round(Math.random()*(windowHeight+100)),radius,0,0);
+            this.particles[i] = new Particle(Math.round(Math.random()*(windowWidth+100)),Math.round(Math.random()*(windowHeight+200)),radius,0,0);
         }
 
         //this.setup()
@@ -72,6 +84,7 @@ class Simulation{
         ellipseMode(RADIUS);
         background(0);
         blendMode(ADD);
+        noiseSeed(random()*this.noiseScale*1000*random());
         
     }
 
@@ -102,20 +115,37 @@ class Simulation{
             
             this.particles[i].draw();
             this.particles[i].color();
-
+            smooth();
         }
     //let particle = new Particle(100,100,100,100);
     }
 
     perlinNoise(){
+        
         for (let i=0;i<this.total;i++){
-            let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.flip;
-            this.particles[i].ySpeed = Math.cos(angle)*this.rate;
-            this.particles[i].xSpeed = Math.sin(angle)*this.rate;
+            let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.particles[i].flip;
+
+            this.particles[i].ySpeed = Math.sin(angle)*this.rate;
+            this.particles[i].xSpeed = Math.cos(angle)*this.rate;
             this.particles[i].xPos += this.particles[i].xSpeed; 
             this.particles[i].yPos += this.particles[i].ySpeed; 
+            this.particles[i].draw();
+            this.particles[i].color();
+            this.particles[i].currLife -= 0.05;
+            if (this.particles[i].currLife<=0){
+                this.particles[i].respawn();
+            }
+            smooth();
+
         }
+
+
+
+
     }
+
+    
+        
 
    
     
@@ -126,21 +156,21 @@ let attractor
 
 
 function setup(){
-    attractor = new Simulation(1,10,0.95,100,800,10);
+    attractor = new Simulation(1.5,10,0.95,300,800,0.5);
     attractor.setup();
 
 }
 function draw(){
 
-    if (mouseIsPressed==true){
+    if (mouseIsPressed==false){
 
-        attractor.mouseX = mouseX;
-        attractor.mouseY = mouseY;
-        attractor.draw();
+        attractor.perlinNoise();
 
     }
     else {
-        attractor.perlinNoise();
+        attractor.mouseX = mouseX;
+        attractor.mouseY = mouseY;
+        attractor.draw();
     }
     
      
