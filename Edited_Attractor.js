@@ -1,7 +1,4 @@
-/*eslint-nodef*/
-
-
-//get it to fade 
+/*eslint no-undef:0*/
 
 //Particle class in order to define attributes for each unqiue particle
 //For example - size, and spawn position
@@ -16,26 +13,43 @@ class Particle {
         this.ySpeed = ySpeed;
         this.xAccn = xAccn;
         this.yAccn = yAccn;
-        this.draw();
+
         this.color();
         this.flip = Math.round(Math.random()*2) * 2 - 1;
-        this.maxLife = random()*10+15;
+        this.maxLife = random()*30+10;
         this.currLife = this.maxLife;
-
+        
+        
     }   
-    
-    draw(){
-        ellipse(this.xPos,this.yPos,this.size,this.size);
+
+    checkDeath(){
+        this.particles[i].currLife -= 0.05;
+        if (this.particles[i].currLife<=0 ){
+            this.particles[i].respawn();
+        }
     }
+
+    
+
     color(){
 
-        let speed = (dist(0,0,this.xSpeed,this.ySpeed)*random()*255)%255;
+        let speed = (dist(0,0,this.xSpeed,this.ySpeed)*255)%255;
 
+
+        //Parameterise
+        
         var red = map(speed*random(), speed*random(), speed*random(), speed*random(), 255); 
         var green = map(speed*random(),speed*random(),speed*random(), speed*random(), 255);
         var blue = map(speed*random(), speed*random(),speed*random(), speed*random(), 255);
+        
+     
+        
+        //fill(red*random()*255, green*random()*255, blue*random()*255, 60);
 
-        fill(red*random(), green*random(), blue*random(), 32);
+    
+        fill(255,0,0,32)
+        ellipse(this.xPos,this.yPos,this.size,this.size);
+       
     }
     respawn(){
         this.currLife = this.maxLife;
@@ -67,29 +81,38 @@ class Simulation{
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.rate = RATE;
-        
+        this.height = windowHeight+100;
+        this.width = windowWidth;
 
         for (let i=0;i<this.total;i++){
             
-            this.particles[i] = new Particle(Math.round(Math.random()*(windowWidth+100)),Math.round(Math.random()*(windowHeight-100)),radius,0,0);
+            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),radius,0,0);
         }
 
+        /*
+        this.rslider = createSlider(0, 255, 100);
+        this.rSlider.position(20, 20);
+        this.gSlider = createSlider(0, 255, 0);
+        this.gSlider.position(20, 50);
+        this.bSlider = createSlider(0, 255, 255);
+        this.bSlider.position(20, 80);
         //this.setup()
         //this.draw();
+        */
     }
 
 
     setup() {
 
        
-        createCanvas(windowWidth+100,windowHeight+100);
+        createCanvas(this.width,this.height+100);
         noStroke(); 
         fill(0);
         ellipseMode(RADIUS);
         background(0);
-        blendMode(ADD);
+        blendMode(BLEND);   
         noiseSeed(random()*this.noiseScale*1000*random());
-        
+       // this.sliders();
     }
 
 
@@ -97,7 +120,7 @@ class Simulation{
     draw(){
 
 
-        fill(0,0,0);
+        //fill(0,0,0);
         
   
         for(let i=0; i<this.total; i++){
@@ -116,10 +139,8 @@ class Simulation{
             this.particles[i].xPos += this.particles[i].xSpeed; 
             this.particles[i].yPos += this.particles[i].ySpeed; 
 
-            
-            this.particles[i].draw();
+
             this.particles[i].color();
-            smooth();
         }
     //let particle = new Particle(100,100,100,100);
     }
@@ -130,8 +151,8 @@ class Simulation{
             let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.particles[i].flip;
             //let temp = this.particles[i].xSpeed;
             //let temp1 = this.particles[i].ySpeed;
-            this.particles[i].ySpeed = lerp(this.particles[i].ySpeed,Math.sin(angle)*this.rate,0.05);
-            this.particles[i].xSpeed = lerp(this.particles[i].xSpeed,Math.cos(angle)*this.rate,0.05);
+            this.particles[i].ySpeed = lerp(this.particles[i].ySpeed,Math.sin(angle)*this.rate,0.4);
+            this.particles[i].xSpeed = lerp(this.particles[i].xSpeed,Math.cos(angle)*this.rate,0.4);
             //this.particles[i].xSpeed = Math.cos(angle)*this.rate;
             
             
@@ -139,12 +160,8 @@ class Simulation{
             //this.particles[i].yPos += lerp(temp1,this.particles[i].ySpeed,0.05); 
             this.particles[i].xPos+=this.particles[i].xSpeed;
             this.particles[i].yPos+=this.particles[i].ySpeed;
-            this.particles[i].draw();
             this.particles[i].color();
-            this.particles[i].currLife -= 0.05;
-            if (this.particles[i].currLife<=0){
-                this.particles[i].respawn();
-            }
+            
             smooth();
 
         }
@@ -155,6 +172,26 @@ class Simulation{
 
     }
 
+
+    run (){
+        background(0,0,0,4)
+       
+        if (mouseIsPressed==false){
+
+            this.perlinNoise();
+    
+        }
+        else {
+            this.mouseX = mouseX;
+            this.mouseY = mouseY;
+            this.draw();
+        }
+        
+    }
+
+    sliders(){
+        
+    }
     
         
 
@@ -166,23 +203,13 @@ class Simulation{
 let attractor
 
 
-function setup(){
-    attractor = new Simulation(1.5,10,0.95,500,800,0.5);
+function setup(){                                               // eslint-disable-line no-unused-vars
+    attractor = new Simulation(1.5,10,0.95,100,800,0.5);
     attractor.setup();
 
 }
-function draw(){
+function draw(){                                                // eslint-disable-line no-unused-vars
 
-    if (mouseIsPressed==false){
-
-        attractor.perlinNoise();
-
-    }
-    else {
-        attractor.mouseX = mouseX;
-        attractor.mouseY = mouseY;
-        attractor.draw();
-    }
-    
+    attractor.run();
      
 }
