@@ -23,9 +23,14 @@ class Particle {
     }   
 
     checkDeath(){
-        this.particles[i].currLife -= 0.05;
-        if (this.particles[i].currLife<=0 ){
-            this.particles[i].respawn();
+        this.currLife -= 0.05;
+        if (this.currLife<=0 ||this.xPos>windowWidth || this.xPos<0 || this.yPos>this.height-300 || this.yPos<0){
+           // console.log("xposition: "+this.xPos)
+            //console.log("yposition:"+this.yPos)
+            this.respawn();
+        }
+        if (this.yPos<this.height-275){
+            console.log("yposition"+Math.round(this.yPos));
         }
     }
 
@@ -54,7 +59,7 @@ class Particle {
     respawn(){
         this.currLife = this.maxLife;
         this.xPos = random() * (windowWidth+100);
-        this.yPos = random() * (windowHeight-100);
+        this.yPos = random() * (windowHeight-200);
     }
 
 }
@@ -86,26 +91,29 @@ class Simulation{
 
         for (let i=0;i<this.total;i++){
             
-            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),radius,0,0);
+            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-300)),radius,0,0);
+
+
         }
 
-        /*
-        this.rslider = createSlider(0, 255, 100);
-        this.rSlider.position(20, 20);
+        
+        this.rSlider = createSlider(0, 255, 100);
+        this.rSlider.position(this.width/2 - 50, this.height-180);
+        this.rSlider.style('color', '#ee0033');
         this.gSlider = createSlider(0, 255, 0);
-        this.gSlider.position(20, 50);
+        this.gSlider.position(this.width/2 - 50, this.height-200);
         this.bSlider = createSlider(0, 255, 255);
-        this.bSlider.position(20, 80);
+        this.bSlider.position(this.width/2 - 50, this.height-220);
         //this.setup()
         //this.draw();
-        */
+        
     }
 
 
     setup() {
 
        
-        createCanvas(this.width,this.height+100);
+        createCanvas(this.width,this.height);
         noStroke(); 
         fill(0);
         ellipseMode(RADIUS);
@@ -147,6 +155,8 @@ class Simulation{
 
     perlinNoise(){
         
+
+        
         for (let i=0;i<this.total;i++){
             let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.particles[i].flip;
             //let temp = this.particles[i].xSpeed;
@@ -162,6 +172,7 @@ class Simulation{
             this.particles[i].yPos+=this.particles[i].ySpeed;
             this.particles[i].color();
             
+            this.particles[i].checkDeath();
             smooth();
 
         }
@@ -174,42 +185,32 @@ class Simulation{
 
 
     run (){
-        background(0,0,0,4)
-       
-        if (mouseIsPressed==false){
+        background(0,0,0,5)
+      
+            if (mouseIsPressed==false){
 
-            this.perlinNoise();
+                this.perlinNoise();
     
-        }
-        else {
-            this.mouseX = mouseX;
-            this.mouseY = mouseY;
-            this.draw();
-        }
+            }
+            else {
+                
+                if (mouseY<this.height-300){
+                this.mouseX = mouseX;
+                this.mouseY = mouseY;
+                this.draw();
+                }
+                else{
+                    this.perlinNoise();
+                }
+        
+            }
         
     }
-
-    sliders(){
-        
-    }
-    
-        
 
    
     
 
 }
 
-let attractor
 
 
-function setup(){                                               // eslint-disable-line no-unused-vars
-    attractor = new Simulation(1.5,10,0.95,100,800,0.5);
-    attractor.setup();
-
-}
-function draw(){                                                // eslint-disable-line no-unused-vars
-
-    attractor.run();
-     
-}
