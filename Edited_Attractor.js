@@ -24,12 +24,15 @@ class Particle {
 
     checkDeath(){
         this.currLife -= 0.05;
-        if (this.currLife<=0 ||this.xPos>windowWidth || this.xPos<0 || this.yPos>this.height-300 || this.yPos<0){
+        if (this.currLife<=0 ||this.xPos>windowWidth || this.xPos<0 || this.yPos>this.height-200 || this.yPos<0){
            // console.log("xposition: "+this.xPos)
             //console.log("yposition:"+this.yPos)
+            if (this.yPos<this.height-200){
+                console.log("yposition death"+Math.round(this.yPos));
+            }
             this.respawn();
         }
-        if (this.yPos<this.height-275){
+        if (this.yPos<this.height-200){
             console.log("yposition"+Math.round(this.yPos));
         }
     }
@@ -86,26 +89,25 @@ class Simulation{
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.rate = RATE;
-        this.height = windowHeight+100;
+        this.height = windowHeight;
         this.width = windowWidth;
 
         for (let i=0;i<this.total;i++){
             
-            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-300)),radius,0,0);
+            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),radius,0,0);
 
 
         }
 
         
         this.rSlider = createSlider(0, 255, 100);
-        this.rSlider.position(this.width/2 - 50, this.height-180);
-        this.rSlider.style('color', '#ee0033');
+        this.rSlider.position(this.width/2 - 50, this.height-50);
         this.gSlider = createSlider(0, 255, 0);
-        this.gSlider.position(this.width/2 - 50, this.height-200);
+        this.gSlider.position(this.width/2 - 50, this.height-100);
         this.bSlider = createSlider(0, 255, 255);
-        this.bSlider.position(this.width/2 - 50, this.height-220);
-        //this.setup()
-        //this.draw();
+        this.bSlider.position(this.width/2 - 50, this.height-150);
+        this.setup()
+        
         
     }
 
@@ -118,7 +120,13 @@ class Simulation{
         fill(0);
         ellipseMode(RADIUS);
         background(0);
+        //white rectangle for buttons and sliders
+        fill(255)
+        rect(0,this.height-200,this.width,200);
+
+        //can use switch case to change blend mode on button press
         blendMode(BLEND);   
+
         noiseSeed(random()*this.noiseScale*1000*random());
        // this.sliders();
     }
@@ -173,6 +181,7 @@ class Simulation{
             this.particles[i].color();
             
             this.particles[i].checkDeath();
+
             smooth();
 
         }
@@ -185,7 +194,10 @@ class Simulation{
 
 
     run (){
-        background(0,0,0,5)
+
+        //black rectangle which also gets trail to fade
+        fill(0,0,0,5)
+        rect(0,0,this.width,this.height-200)
       
             if (mouseIsPressed==false){
 
