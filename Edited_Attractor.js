@@ -74,21 +74,23 @@ class Particle {
 
 class Simulation{
 
-    constructor ( magnetism, deceleration, noiseScale, RATE, mouseX,mouseY){
+    constructor ( magnetism, deceleration, noiseScale, mouseX,mouseY){
 
         this.height = windowHeight;
         this.width = windowWidth;
 
 
+
         this.clearButton = createButton("Clear");
-        this.clearButton.position (this.width/2 - 250, this.height-100);
+        this.clearButton.position (this.width/2 - 500, this.height-100);
         this.clearButton.mousePressed(this.clearButtonFunc);
     
         this.seedButton = createButton("Randomise Seed");
-        this.seedButton.position (this.width/2 - 200, this.height-100);
+        this.seedButton.position (this.width/2 - 450, this.height-100);
         this.seedButton.mousePressed(this.seedButtonFunc);
 
-        this.
+        this.rateSlider = createSlider(0.25,1.75,0.5,0);
+        this.rateSlider.position(this.width/2 - 250, this.height-100)
 
         this.rSlider = createSlider(0, 255, 255);
         this.rSlider.position(this.width/2 - 50, this.height-150);
@@ -99,13 +101,16 @@ class Simulation{
         this.bSlider = createSlider(0, 255, 0);
         this.bSlider.position(this.width/2 - 50, this.height-50);
 
-        this.totalParticlesSlider = createSlider(5, 1000, 1000 ,5);
+        this.totalParticlesSlider = createSlider(5, 1000, 100 ,5);
         this.totalParticlesSlider.position(this.width/2 + 100, this.height-100);
         this.totalParticlesSlider.style('width', '100px');
 
-        this.radiusSlider = createSlider(1, 10,1);
+        this.radiusSlider = createSlider(2, 10,3,0);
         this.radiusSlider.position(this.width/2 + 250, this.height-100);
         this.radiusSlider.style('width', '50px');
+
+        this.randomiseColourCheckbox = createCheckbox("Randomise colour on click", false)
+        this.randomiseColourCheckbox.position(this.width/2 +350, this.height -100) 
 
 
 
@@ -130,16 +135,12 @@ class Simulation{
         
         this.mouseX = mouseX;
         this.mouseY = mouseY;
-        this.rate = RATE;
+        
         
 
         
 
 
-        
-
-        this.setup()
-        
 
 
         for (let i=0;i<this.total;i++){
@@ -165,7 +166,6 @@ class Simulation{
         //white rectangle for buttons and sliders
         fill(255)
         rect(0,this.height-200,this.width,200);
-
         //can use switch case to change blend mode on button press
         blendMode(BLEND);   
 
@@ -214,8 +214,8 @@ class Simulation{
             let angle = noise(this.particles[i].xPos/this.noiseScale,this.particles[i].yPos/this.noiseScale)*2*Math.PI*this.noiseScale*this.particles[i].flip;
             //let temp = this.particles[i].xSpeed;
             //let temp1 = this.particles[i].ySpeed;
-            this.particles[i].ySpeed = lerp(this.particles[i].ySpeed,Math.sin(angle)*this.rate,0.4);
-            this.particles[i].xSpeed = lerp(this.particles[i].xSpeed,Math.cos(angle)*this.rate,0.4);
+            this.particles[i].ySpeed = lerp(this.particles[i].ySpeed,Math.sin(angle)*this.rateSlider.value(),0.4);
+            this.particles[i].xSpeed = lerp(this.particles[i].xSpeed,Math.cos(angle)*this.rateSlider.value(),0.4);
             //this.particles[i].xSpeed = Math.cos(angle)*this.rate;
             
             
@@ -252,13 +252,14 @@ class Simulation{
             if (mouseIsPressed==false){
 
                 this.perlinNoise();
-    
+                
             }
             else {
                 
-                if (mouseY<this.height-300){
+                if (mouseY<this.height-200){
                 this.mouseX = mouseX;
                 this.mouseY = mouseY;
+                
                 this.draw();
                 }
                 else{
@@ -320,6 +321,8 @@ class Simulation{
 
     }
     
+
+   
 
 }
 
