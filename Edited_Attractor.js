@@ -74,12 +74,49 @@ class Particle {
 
 class Simulation{
 
-    constructor (radius, magnetism, deceleration,total,noiseScale, RATE, mouseX,mouseY){
+    constructor ( magnetism, deceleration, noiseScale, RATE, mouseX,mouseY){
+
+        this.height = windowHeight;
+        this.width = windowWidth;
+
+
+        this.clearButton = createButton("Clear");
+        this.clearButton.position (this.width/2 - 250, this.height-100);
+        this.clearButton.mousePressed(this.clearButtonFunc);
+    
+        this.seedButton = createButton("Randomise Seed");
+        this.seedButton.position (this.width/2 - 200, this.height-100);
+        this.seedButton.mousePressed(this.seedButtonFunc);
+
+        this.
+
+        this.rSlider = createSlider(0, 255, 255);
+        this.rSlider.position(this.width/2 - 50, this.height-150);
+
+        this.gSlider = createSlider(0, 255, 0);
+        this.gSlider.position(this.width/2 - 50, this.height-100);
+
+        this.bSlider = createSlider(0, 255, 0);
+        this.bSlider.position(this.width/2 - 50, this.height-50);
+
+        this.totalParticlesSlider = createSlider(5, 1000, 1000 ,5);
+        this.totalParticlesSlider.position(this.width/2 + 100, this.height-100);
+        this.totalParticlesSlider.style('width', '100px');
+
+        this.radiusSlider = createSlider(1, 10,1);
+        this.radiusSlider.position(this.width/2 + 250, this.height-100);
+        this.radiusSlider.style('width', '50px');
+
+
+
+
+
+
 
         this.magnetism = magnetism;
         this.deceleration = deceleration;
-        this.radius = radius;
-        this.total = total;
+        
+        this.total = this.totalParticlesSlider.value();
         /*
         this.xAccn = new Array(this.total);
         this.xPos = new Array(this.total);
@@ -94,27 +131,23 @@ class Simulation{
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.rate = RATE;
-        this.height = windowHeight;
-        this.width = windowWidth;
+        
+
+        
+
+
+        
+
+        this.setup()
+        
+
 
         for (let i=0;i<this.total;i++){
             
-            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),radius,0,0);
+            this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),this.radiusSlider.value(),0,0);
 
 
         }
-
-        this.clearButton = createButton("clear");
-        this.clearButton.position (this.width/2 - 100, this.height-100);
-        this.clearButton.mousePressed(this.clearButtonFunc);
-        this.rSlider = createSlider(0, 255, 255);
-        this.rSlider.position(this.width/2 - 50, this.height-50);
-        this.gSlider = createSlider(0, 255, 0);
-        this.gSlider.position(this.width/2 - 50, this.height-100);
-        this.bSlider = createSlider(0, 255, 0);
-        this.bSlider.position(this.width/2 - 50, this.height-150);
-        this.setup()
-        
         console.log(this.height+"\n"+(this.height-200));
     }
 
@@ -171,6 +204,7 @@ class Simulation{
         }
     //let particle = new Particle(100,100,100,100);
     }
+
 
     perlinNoise(){
         
@@ -232,17 +266,58 @@ class Simulation{
                 }
         
             }
-        
+
+
+        this.updateTotalParticles();
+        this.updatePartcileRadius();
+
+        console.log(this.total);
     }
 
    
 
     clearButtonFunc(){
+
         fill (0,0,0);
         rect(0,0,windowWidth,windowHeight-200)
         for(let i=0; i<this.total; i++){
             this.particles[i].respawn();
         }
+
+    }
+
+    seedButtonFunc(){
+        fill (0,0,0);
+        rect(0,0,windowWidth,windowHeight-200)
+        noiseSeed(random()*this.noiseScale*1000*random());
+    }
+
+    updateTotalParticles(){
+
+        if (this.total<this.totalParticlesSlider.value()){
+            for (let i=this.total;i<this.totalParticlesSlider.value();i++){
+            
+                this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),this.radius,0,0);
+    
+            }
+            this.total = this.totalParticlesSlider.value()
+        }
+        else if (this.total>this.totalParticlesSlider.value()){
+
+            for (let i=this.total;i>this.totalParticlesSlider.value();i--){
+            
+                delete this.particles[i];
+    
+            }
+            this.total = this.totalParticlesSlider.value()
+        }
+    }
+
+    updatePartcileRadius(){
+        for (let i =0; i<this.total;i++){
+            this.particles[i].size = this.radiusSlider.value();
+        }
+
     }
     
 
