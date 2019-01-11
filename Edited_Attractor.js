@@ -6,7 +6,7 @@
 /* eslint max-params:0*/
 /* eslint no-mixed-operators:0*/
 /* eslint max-lines:0*/
-/* eslint no-magic-numbers: ["error", { "ignore": [0, 0.4, 1,2,3,4,5,6,7,8,9,10,11,12,13, 14,50,100,200,250,350,450, 500, 600 ,1000] }]*/
+/* eslint no-magic-numbers:0*/
 /* eslint max-lines-per-function:0*/
 /* eslint no-plusplus:0*/
 /* eslint id-length:0*/
@@ -108,7 +108,6 @@ class Simulation {
         this.total = 1000;
 
 
-
         this.clearButton = createButton("Clear");
         this.clearButton.position(this.mainWidthForSliders - 600, this.mainHeightForSliders);
         this.clearButton.mousePressed(this.clearButtonFunc);
@@ -120,6 +119,7 @@ class Simulation {
         this.seedButton = createButton("Randomise Seed");
         this.seedButton.position(this.mainWidthForSliders - 400, this.mainHeightForSliders);
         this.seedButton.mousePressed(this.seedButtonFunc);
+        this.seedButtonFunc.bind(this);
 
         this.rateSlider = createSlider(this.minRate, this.maxRate, this.mainRate, 0);
         this.rateSlider.position(this.mainWidthForSliders - 250, this.mainHeightForSliders);
@@ -326,60 +326,73 @@ class Simulation {
 
     }
 
-    updateTotalParticles(){
+    updateTotalParticles () {
 
-        if (this.total<this.totalParticlesSlider.value()){
-            for (let i=this.total;i<this.totalParticlesSlider.value();i++){
-            
-                this.particles[i] = new Particle(Math.round(Math.random()*(this.width+100)),Math.round(Math.random()*(this.height-200)),this.radius,0,0);
-    
+        if (this.total < this.totalParticlesSlider.value()) {
+
+            for (let i = this.total; i < this.totalParticlesSlider.value(); i++) {
+
+                this.particles[i] = new Particle(Math.round(Math.random() * (this.width + 100)), Math.round(Math.random() * (this.height - 200)), this.radius, 0, 0);
+
             }
-            this.total = this.totalParticlesSlider.value()
-        }
-        else if (this.total>this.totalParticlesSlider.value()){
 
-            for (let i=this.total;i>this.totalParticlesSlider.value();i--){
-            
+            this.total = this.totalParticlesSlider.value();
+
+        } else if (this.total > this.totalParticlesSlider.value()) {
+
+            for (let i = this.total; i > this.totalParticlesSlider.value(); i--) {
+
                 delete this.particles[i];
-    
+
             }
-            this.total = this.totalParticlesSlider.value()
+            this.total = this.totalParticlesSlider.value();
+
         }
+
     }
 
-    updatePartcileRadius() {
-        for (let i =0; i<this.total;i++) {
+    updatePartcileRadius () {
+
+        for (let i = 0; i < this.total; i++) {
+
             this.particles[i].size = this.radiusSlider.value();
+
         }
 
     }
 
 
     randomCheckEvent () {
+
         if (this.checked()) {
-            // when checked randomise colour with each click
-            console.log(this.total);
-            console.log(this.runOnce);
-            if (this.drawing ==true  && this.runOnce==false){
-                for (let i =0;i<this.total;i++){
-                    this.particles[i].r = Math.round(random(255));
-                    this.particles[i].g = Math.round(random(255));
-                    this.particles[i].b = Math.round(random(255));
+
+            // When checked randomise colour with each click
+            if (this.drawing === true && this.runOnce === false) {
+
+                for (let i = 0; i < this.total; i++) {
+
+                    this.particles[i].r = Math.round(random(this.maxColour));
+                    this.particles[i].g = Math.round(random(this.maxColour));
+                    this.particles[i].b = Math.round(random(this.maxColour));
                     this.particles[i].colorParticle();
                     console.log('Checking!');
+
                 }
                 this.runOnce = true;
+
             }
-            
-          } else {
-              // do nothing
-            console.log('Unchecking!');
-          }
+
+        } else {
+
+            // Do nothing
+
+        }
+
     }
 
     changeBlendMode () {
 
-        this.blendChange++;
+        super.blendChange++;
 
         switch (this.blendChange % 14) {
 
