@@ -1,10 +1,23 @@
-/*eslint no-undef:0*/
-/*eslint no-unused-vars:0*/
-//Particle class in order to define attributes for each unqiue particle
-//For example - size, and spawn position
+/* eslint no-undef:0*/
+/* eslint no-unused-vars:0*/
+/* eslint max-classes-per-file:0*/
+/* eslint max-len:0*/
+/* eslint max-statements:0*/
+/* eslint max-params:0*/
+/* eslint no-mixed-operators:0*/
+/* eslint max-lines:0*/
+/* eslint no-magic-numbers: ["error", { "ignore": [0,1,2,5,10,50] }]*/
+/* eslint max-lines-per-function:0*/
+
+/*
+ * Particle class in order to define attributes for each unqiue particle
+ * For example - size, and spawn position
+ */
+
+
 class Particle {
 
-    constructor (xPos, yPos, size,xSpeed,ySpeed,xAccn,yAccn,r,g,b) {
+    constructor (xPos, yPos, size, xSpeed, ySpeed, xAccn, yAccn, red, green, blue) {
 
         this.xPos = xPos;
         this.yPos = yPos;
@@ -13,104 +26,126 @@ class Particle {
         this.ySpeed = ySpeed;
         this.xAccn = xAccn;
         this.yAccn = yAccn;
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
         this.color();
-        this.flip = Math.round(Math.random()*2) * 2 - 1;
-        this.maxLife = random()*30+10;
-        this.currLife = this.maxLife;
-        
-        
-    }   
+        this.flip = Math.round(Math.random() * 2) * 2 - 1;
 
-    checkDeath(){
+        this.maxRandLifeVal = 30;
+        this.minLifeVal = 10;
+        this.maxLife = random() * this.maxLifeVal + this.minLifeVal;
+        this.currLife = this.maxLife;
+        this.mainHeight = this.height - 200;
+        this.mainWidth = this.width + 100;
+        this.maxColour = 255;
+        this.alpha = 32;
+
+    }
+
+    checkDeath () {
+
         this.currLife -= 0.05;
         //console.log("yposition death"+Math.round(this.yPos));
-        if (this.currLife<=0 ||this.xPos>windowWidth || this.xPos<0 || this.yPos>this.height-200 || this.yPos<0){
+        if (this.currLife <= 0 || this.xPos > windowWidth || this.xPos < 0 || this.yPos > this.mainHeight || this.yPos < 0) {
+
            // console.log("xposition: "+this.xPos)
             //console.log("yposition:"+this.yPos)
-            if (this.yPos>this.height-200){
+            if (this.yPos > this.mainHeight) {
+
                 console.log("yposition death"+Math.round(this.yPos));
+
             }
             this.respawn();
+
         }
-        if (this.yPos>this.height-200){
+        if (this.yPos > this.mainHeight) {
+
             console.log("yposition"+Math.round(this.yPos));
+
         }
+
     }
 
-    
 
-    color(){
+    color () {
 
-        let speed = (dist(0,0,this.xSpeed,this.ySpeed)*255)%255;
+        let speed = dist(0, 0, this.xSpeed, this.ySpeed) * this.maxColour % this.maxColour;
 
+        // fill(255,0,0,32);   set to red
 
-        //Parameterise
-        
-        var red = map(speed*random(), speed*random(), speed*random(), speed*random(), 255); 
-        var green = map(speed*random(),speed*random(),speed*random(), speed*random(), 255);
-        var blue = map(speed*random(), speed*random(),speed*random(), speed*random(), 255);
-        
-        
-        
-        //fill(red*random()*255, green*random()*255, blue*random()*255, 60);
+        fill(this.r, this.g, this.b, this.alpha);
+        ellipse(this.xPos, this.yPos, this.size, this.size);
 
-    
-        fill(255,0,0,32);   //set to red
-
-        fill (this.r,this.g,this.b,32);
-        ellipse(this.xPos,this.yPos,this.size,this.size);
-       
     }
-    respawn(){
+
+
+    respawn () {
+
         this.currLife = this.maxLife;
-        this.xPos = random() * (windowWidth+100);
-        this.yPos = random() * (windowHeight-200);
+        this.xPos = random() * this.mainWidth;
+        this.yPos = random() * this.mainHeight;
+
     }
 
 }
 
-class Simulation{
+class Simulation {
 
-    constructor ( magnetism, deceleration, noiseScale, mouseX,mouseY){
+    constructor (magnetism, deceleration, noiseScale, mouseX, mouseY) {
+
+        this.runOnce = false;
+        this.drawing = false;
+
 
         this.height = windowHeight;
         this.width = windowWidth;
+        this.mainHeightForSliders = this.height - 100;
+        this.mainWidthForSliders = this.width / 2;
+
+        this.mainRate = 0.5;
+        this.minRate = 0.25;
+        this.maxRate = 1.75;
+
+        this.minRadius = 2;
+        this.maxRadius = 10;
+        this.mainRadius = 3;
+        this.maxColour = 255;
+        this.total = 1000;
 
 
 
         this.clearButton = createButton("Clear");
-        this.clearButton.position (this.width/2 - 500, this.height-100);
+        this.clearButton.position(this.mainWidthForSliders - 500, this.mainHeightForSliders);
         this.clearButton.mousePressed(this.clearButtonFunc);
-    
+
         this.seedButton = createButton("Randomise Seed");
-        this.seedButton.position (this.width/2 - 450, this.height-100);
+        this.seedButton.position(this.mainWidthForSliders - 450, this.mainHeightForSliders);
         this.seedButton.mousePressed(this.seedButtonFunc);
 
-        this.rateSlider = createSlider(0.25,1.75,0.5,0);
-        this.rateSlider.position(this.width/2 - 250, this.height-100)
+        this.rateSlider = createSlider(this.minRate, this.maxRate, this.mainRate, 0);
+        this.rateSlider.position(this.mainWidthForSliders - 250, tthis.mainHeightForSliders);
 
-        this.rSlider = createSlider(0, 255, 255);
-        this.rSlider.position(this.width/2 - 50, this.height-150);
+        this.rSlider = createSlider(0, this.maxColour, this.maxColour);
+        this.rSlider.position(this.mainWidthForSliders - 50, this.mainHeightForSliders - 50);
 
-        this.gSlider = createSlider(0, 255, 0);
-        this.gSlider.position(this.width/2 - 50, this.height-100);
+        this.gSlider = createSlider(0, this.maxColour, 0);
+        this.gSlider.position(this.mainWidthForSliders - 50, this.mainHeightForSliders);
 
-        this.bSlider = createSlider(0, 255, 0);
-        this.bSlider.position(this.width/2 - 50, this.height-50);
+        this.bSlider = createSlider(0, this.maxColour, 0);
+        this.bSlider.position(this.mainWidthForSliders - 50, this.mainHeightForSliders + 50);
 
-        this.totalParticlesSlider = createSlider(5, 1000, 100 ,5);
-        this.totalParticlesSlider.position(this.width/2 + 100, this.height-100);
-        this.totalParticlesSlider.style('width', '100px');
+        this.totalParticlesSlider = createSlider(5, this.total, this.total / 10, 5);
+        this.totalParticlesSlider.position(this.mainWidthForSliders + 100, this.mainHeightForSliders);
+        this.totalParticlesSlider.style("width", "100px");
 
-        this.radiusSlider = createSlider(2, 10,3,0);
-        this.radiusSlider.position(this.width/2 + 250, this.height-100);
-        this.radiusSlider.style('width', '50px');
+        this.radiusSlider = createSlider(this.minRadius, this.maxRadius, this.mainRadius, 0);
+        this.radiusSlider.position(this.mainWidthForSliders + 250, this.mainHeightForSliders);
+        this.radiusSlider.style("width", "50px");
 
         this.randomiseColourCheckbox = createCheckbox("Randomise colour on click", false)
         this.randomiseColourCheckbox.position(this.width/2 +350, this.height -100) 
+        //this.randomiseColourCheckbox.changed(this.randomCheckEvent);
 
 
 
@@ -121,7 +156,7 @@ class Simulation{
         this.magnetism = magnetism;
         this.deceleration = deceleration;
         
-        this.total = this.totalParticlesSlider.value();
+        
         /*
         this.xAccn = new Array(this.total);
         this.xPos = new Array(this.total);
@@ -197,9 +232,12 @@ class Simulation{
             this.particles[i].xPos += this.particles[i].xSpeed; 
             this.particles[i].yPos += this.particles[i].ySpeed; 
 
-            this.particles[i].r = this.rSlider.value();
-            this.particles[i].g = this.gSlider.value();
-            this.particles[i].b = this.bSlider.value();
+            if (!this.randomiseColourCheckbox.checked()){
+
+                this.particles[i].r = this.rSlider.value();
+                this.particles[i].g = this.gSlider.value();
+                this.particles[i].b = this.bSlider.value();
+            }
             this.particles[i].color();
         }
     //let particle = new Particle(100,100,100,100);
@@ -224,10 +262,12 @@ class Simulation{
             this.particles[i].xPos+=this.particles[i].xSpeed;
             this.particles[i].yPos+=this.particles[i].ySpeed;
 
-            this.particles[i].r = this.rSlider.value();
-            this.particles[i].g = this.gSlider.value();
-            this.particles[i].b = this.bSlider.value();
+            if (!this.randomiseColourCheckbox.checked()){
 
+                this.particles[i].r = this.rSlider.value();
+                this.particles[i].g = this.gSlider.value();
+                this.particles[i].b = this.bSlider.value();
+            }
             this.particles[i].color();
             
             this.particles[i].checkDeath();
@@ -243,23 +283,37 @@ class Simulation{
     }
 
 
-    run (){
+    run () {
 
         //black rectangle which also gets trail to fade
         fill(0,0,0,5)
         rect(0,0,this.width,this.height-200)
       
-            if (mouseIsPressed==false){
+            if (mouseIsPressed==false) {
 
                 this.perlinNoise();
-                
+
+                this.runOnce=false;
             }
             else {
                 
-                if (mouseY<this.height-200){
+                if (mouseY<this.height-200) {
+
                 this.mouseX = mouseX;
                 this.mouseY = mouseY;
                 
+                if (this.randomiseColourCheckbox.checked() && this.runOnce ==false){
+                   
+                    for ( let i =0; i<this.total; i++ ){
+                        this.particles[i].r = Math.round(random(255));
+                        this.particles[i].g = Math.round(random(255));
+                        this.particles[i].b = Math.round(random(255));
+                        this.particles[i].color();
+                        console.log('Checking!');
+                    }
+                    this.runOnce = true;   
+                    
+                }
                 this.draw();
                 }
                 else{
@@ -272,7 +326,7 @@ class Simulation{
         this.updateTotalParticles();
         this.updatePartcileRadius();
 
-        console.log(this.total);
+        //console.log(this.total);
     }
 
    
@@ -290,7 +344,7 @@ class Simulation{
     seedButtonFunc(){
         fill (0,0,0);
         rect(0,0,windowWidth,windowHeight-200)
-        noiseSeed(random()*this.noiseScale*1000*random());
+        noiseSeed(random()* this.noiseScale *1000*random());
     }
 
     updateTotalParticles(){
@@ -314,11 +368,34 @@ class Simulation{
         }
     }
 
-    updatePartcileRadius(){
-        for (let i =0; i<this.total;i++){
+    updatePartcileRadius() {
+        for (let i =0; i<this.total;i++) {
             this.particles[i].size = this.radiusSlider.value();
         }
 
+    }
+
+
+    randomCheckEvent () {
+        if (this.checked()) {
+            // when checked randomise colour with each click
+            console.log(this.total);
+            console.log(this.runOnce);
+            if (this.drawing ==true  && this.runOnce==false){
+                for (let i =0;i<this.total;i++){
+                    this.particles[i].r = Math.round(random(255));
+                    this.particles[i].g = Math.round(random(255));
+                    this.particles[i].b = Math.round(random(255));
+                    this.particles[i].color();
+                    console.log('Checking!');
+                }
+                this.runOnce = true;
+            }
+            
+          } else {
+              // do nothing
+            console.log('Unchecking!');
+          }
     }
     
 
