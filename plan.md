@@ -18,5 +18,6 @@ TO DO:
 3. change particle access so that I change all particles globally rather than individually through for loop
 4. add getters and setters
 5. add more eslint rules
-6. documentation for program
-7. write instructions on html and double check page looks ok
+6. sort renderer stuff
+7. documentation for program
+8. write instructions on html and double check page looks ok
