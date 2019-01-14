@@ -25,13 +25,20 @@
                         <div id="attractor"></div>      
                 </td>
                 <td>
-                        <span>Rate</span>
-                        <input type="range" min="0.25" max="1.75" value="0.5" step="any" class="slider" id="rateSlider">
-                        <output id="rateSlider"></output>
+                
+                        <span>Rate of particles</span>
+                        <input type="range" min="0.25" max="1.75" value="0.5" step="0.005" class="slider" id="rateSlider">
+                        <output id="rateSliderOut">0.5</output>
+                    <br>
+                        <span>Total particles</span>
+                        <input type="range" min="6" max="1001" value="200" step="1" class="slider" id="totalSlider">
+                        <output id="totalSliderOut">200</output>
+                    <br>
+        
+                        <span>Radius of particles</span>
+                        <input type="range" min="2" max="10" value="3" step="0.25" class="slider" id="radiusSlider">
+                        <output id="radiusSliderOut">3</output>
 
-                        <span>Rate</span>
-                        <input type="range" min="0.25" max="1.75" value="0.5" step="any" class="slider" id="rateSlider">
-                        <output id="rateSlider"></output>
                 </td>
 
             </tr>
