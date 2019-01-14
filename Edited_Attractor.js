@@ -38,8 +38,8 @@ class Particle {
         this.minLifeVal = 10;
         this.maxLife = random(this.maxRandLifeVal) + this.minLifeVal;
         this.currLife = this.maxLife;
-        this.mainHeight = windowHeight - 200;
-        this.mainWidth = windowWidth + 100;
+        this.mainHeight = windowHeight;
+        this.mainWidth = windowWidth;
         this.maxColour = 255;
         this.alpha = 32;
         this.colorParticle();
@@ -50,8 +50,8 @@ class Particle {
     checkDeath () {
 
         this.currLife -= 0.05;
-        //console.log("yposition death"+Math.round(this.yPos));
-        if (this.currLife <= 0 || this.xPos > windowWidth || this.xPos < 0 || this.yPos + 10 > this.mainHeight || this.yPos < 0) {
+        // Console.log("yposition death"+Math.round(this.yPos));
+        if (this.currLife <= 0 || this.xPos > windowWidth || this.xPos < 0 || this.yPos + 10 > this.mainHeight-200 || this.yPos < 0) {
 
 
             this.respawn();
@@ -64,9 +64,9 @@ class Particle {
 
     colorParticle () {
 
-        let speed = dist(0, 0, this.xSpeed, this.ySpeed) * this.maxColour % this.maxColour;
+        const speed = dist(0, 0, this.xSpeed, this.ySpeed) * this.maxColour % this.maxColour;
 
-        // fill(255,0,0,32);   set to red
+        // Fill(255,0,0,32);   set to red
 
         fill(this.r, this.g, this.b, this.alpha);
         ellipse(this.xPos, this.yPos, this.size, this.size);
@@ -78,7 +78,7 @@ class Particle {
 
         this.currLife = random(this.maxLifeVal) + this.minLifeVal;
         this.xPos = random(this.mainWidth);
-        this.yPos = random(this.mainHeight);
+        this.yPos = random(this.mainHeight-200);
 
     }
 
@@ -86,26 +86,28 @@ class Particle {
 
 class Simulation {
 
-    constructor (magnetism, deceleration, noiseScale, mouseX, mouseY) {
+    constructor ({magnetism, deceleration, noiseScale, mouseX, mouseY, renderer, total, radius, rate}) {
+
+
+
 
         this.runOnce = false;
         this.drawing = false;
-
 
         this.height = windowHeight;
         this.width = windowWidth;
         this.mainHeightForSliders = this.height - 100;
         this.mainWidthForSliders = this.width / 2;
 
-        this.mainRate = 0.5;
+        this.mainRate = rate;
         this.minRate = 0.25;
         this.maxRate = 1.75;
 
         this.minRadius = 2;
         this.maxRadius = 10;
-        this.mainRadius = 3;
+        this.mainRadius = radius;
         this.maxColour = 255;
-        this.total = 1000;
+        this.total = total;
 
 
         this.clearButton = createButton("Clear");
@@ -119,7 +121,6 @@ class Simulation {
         this.seedButton = createButton("Randomise Seed");
         this.seedButton.position(this.mainWidthForSliders - 400, this.mainHeightForSliders);
         this.seedButton.mousePressed(this.seedButtonFunc);
-        this.seedButtonFunc.bind(this);
 
         this.rateSlider = createSlider(this.minRate, this.maxRate, this.mainRate, 0);
         this.rateSlider.position(this.mainWidthForSliders - 250, this.mainHeightForSliders);
@@ -169,13 +170,15 @@ class Simulation {
 
     }
 
-
+    
 
 
     setup () {
 
 
-        createCanvas(this.width, this.height);
+        this.canvas = createCanvas(this.width*3/4, this.height);
+        this.canvas.parent("attractor");
+
         noStroke();
         fill(0);
         ellipseMode(RADIUS);
@@ -183,11 +186,11 @@ class Simulation {
         // White rectangle for buttons and sliders
         fill(this.maxColour);
         rect(0, this.mainHeightForSliders - 100, this.width, 200);
-
+        
         // Can use switch case to change blend mode on button press
         blendMode(BLEND);
 
-        noiseSeed(random() * this.noiseScale * 1000 * random());
+        noiseSeed(random() * 10000);
 
     }
 
@@ -283,14 +286,14 @@ class Simulation {
             this.mouseY = mouseY;
 
             if (this.randomiseColourCheckbox.checked() && this.runOnce === false) {
-                   
+
                 for (let i = 0; i < this.total; i++) {
 
                     this.particles[i].r = Math.round(random(this.maxColour));
                     this.particles[i].g = Math.round(random(this.maxColour));
                     this.particles[i].b = Math.round(random(this.maxColour));
                     this.particles[i].colorParticle();
-                    console.log('Checking!');
+                    // Console.log('Checking!');
 
                 }
                 this.runOnce = true;
@@ -322,8 +325,8 @@ class Simulation {
 
         fill(0, 0, 0);
         rect(0, 0, windowWidth, windowHeight - 200);
-        noiseSeed(random() * this.noiseScale * 1000 * random());
-
+        noiseSeed(random() * 10000);
+        
     }
 
     updateTotalParticles () {
@@ -375,7 +378,7 @@ class Simulation {
                     this.particles[i].g = Math.round(random(this.maxColour));
                     this.particles[i].b = Math.round(random(this.maxColour));
                     this.particles[i].colorParticle();
-                    console.log('Checking!');
+                    // Console.log('Checking!');
 
                 }
                 this.runOnce = true;
@@ -392,8 +395,8 @@ class Simulation {
 
     changeBlendMode () {
 
-        super.blendChange++;
-
+        this.blendChange++;
+        
         switch (this.blendChange % 14) {
 
         default:
