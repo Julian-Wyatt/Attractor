@@ -8,3 +8,15 @@ TO DO:
 6. stop particles moving below line #### tick ####
 7. fix button functions
 8. organise sliders and buttons and add labels
+
+
+
+
+
+1. add html sliders and link to my javascript
+2. remove old sliders, and get the link to new sliders to perform same tasks
+3. change particle access so that I change all particles globally rather than individually through for loop
+4. add getters and setters
+5. add more eslint rules
+6. documentation for program
+7. write instructions on html and double check page looks ok
