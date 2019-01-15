@@ -2,10 +2,11 @@
 
 <html>
     <head>
-        <script src="Edited_Attractor.js"></script>
-        <script src="index.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.js"></script>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.js"></script>
+            <script src="Edited_Attractor.js"></script>
+            <script src="index.js"></script>
        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>-->
 
     </head>
@@ -13,11 +14,14 @@
 
         <table>
             <tr>
-                <head>
+                <h1 style="font: 30px arial, sans-serif;">
                         Welcome to Attractor!!
-                </head>
-                <p>
+                </h1>
+                <p style="font: 15px arial, sans-serif;">
                     Instructions are as follows: 
+                    <br>
+                    Initially, all particles move randomly according to a randomly generated seed. When the mouse button is clicked, the particles will experience a magnetic field and will be attracted to the mouses location. <br> 
+                    Furthermore, all of the parameters that decide how the particles look and move are freely editable from the sliders, buttons and checkbox to the right
                 </p>
             </tr>
             <tr>
@@ -25,10 +29,25 @@
                         <div id="attractor"></div>      
                 </td>
                 <td>
-                
+                        <button id="clearButton">Clear</button>
+                        <button id="randomiseButton">Randomise Seed</button>
+                        <button id="blendButton">Change Blend Mode</button>
+                        <br><br>
+                        Current Noise Seed: <output id="seedOut"></output><br>
+                        Current Blend Mode: <output id="blendOut">Blend</output>
+                    <br>
+                    <br>
                         <span>Rate of particles</span>
                         <input type="range" min="0.25" max="1.75" value="0.5" step="0.005" class="slider" id="rateSlider">
                         <output id="rateSliderOut">0.5</output>
+                    <br>
+                        <span>Magnetism Strength</span>
+                        <input type="range" min="5" max="100" value="10" step="0.05" class="slider" id="magSlider">
+                        <output id="magSliderOut">10</output>
+                    <br>
+                        <span>Deceleration of Particles</span>
+                        <input type="range" min="0.4" max="1" value="0.95" step="0.005" class="slider" id="decSlider">
+                        <output id="decSliderOut">0.95</output>
                     <br>
                         <span>Total particles</span>
                         <input type="range" min="6" max="1001" value="200" step="1" class="slider" id="totalSlider">
@@ -38,6 +57,33 @@
                         <span>Radius of particles</span>
                         <input type="range" min="2" max="10" value="3" step="0.25" class="slider" id="radiusSlider">
                         <output id="radiusSliderOut">3</output>
+
+                    <br><br>
+                        Colours:
+                        <br>
+
+                        <span>Red</span>
+                        <input type="range" min="0" max="255" value="255" step="1" class="slider" id="redSlider">
+                        <output id="redSliderOut">255</output>
+                    
+                    <br>
+
+                        <span>Green</span>
+                        <input type="range" min="0" max="255" value="0" step="1" class="slider" id="greenSlider">
+                        <output id="greenSliderOut">255</output>
+                        
+                    <br>
+
+                        <span>Blue</span>
+                        <input type="range" min="0" max="255" value="0" step="1" class="slider" id="blueSlider">
+                        <output id="blueSliderOut">255</output>
+                        
+                    <br>
+
+                        <input type="checkbox" name="randColour" id="randColour">
+                        Randomise Colours
+
+                    <br>
 
                 </td>
 
