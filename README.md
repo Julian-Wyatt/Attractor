@@ -26,3 +26,33 @@ Index.js contains the code to link the html to my main simulation class, which i
     
             <script src="Edited_Attractor.js"></script>
             <script src="index.js"></script>
+
+It's from index.js where I instantiate my simulation class, and add all my event listeners. See below where I instantiate and add one event listener: 
+
+        let attractor;
+
+        function setup() {
+
+            attractor =  new Simulation({magnetism:10, deceleration:0.95, noiseScale:1500, total:200, radius:3, rate: 0.5, r:255, g:0, b:0});
+            document.getElementById("seedOut").textContent = Math.round(attractor.getNoiseSeed());
+ 
+
+        }
+
+        function draw() { 
+
+            attractor.run();
+     
+        } 
+
+        document.addEventListener("DOMContentLoaded",function(){
+        
+        let totalSlider = document.getElementById("totalSlider");
+        function setTotal(event){
+            let totalVal = totalSlider.value;
+            document.getElementById("totalSliderOut").textContent = (totalVal-1);
+            attractor.updateTotalParticles(totalVal--);
+        }
+        totalSlider.addEventListener("input",setTotal);
+
+        }
