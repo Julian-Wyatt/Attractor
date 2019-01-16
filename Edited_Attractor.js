@@ -28,6 +28,7 @@ class Particle {
 
         this.xPos = xPos;
         this.yPos = yPos;
+
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
         this.xAccn = xAccn;
@@ -53,9 +54,9 @@ class Particle {
 
     }
 
-    checkDeath (drawing) {
+    checkDeath (attracting) {
 
-        if (drawing) {
+        if (attracting) {
 
             this.currLife -= 0.05;
 
@@ -107,13 +108,6 @@ class Particle {
 
             } else {
 
-                const speed = dist(0, 0, this.xSpeed, this.ySpeed);
-                this.Vr = map(speed, 0, 5, 0, 255);
-                this.Vg = map(speed, 0, 5, 64, 255);
-                this.Vb = map(speed, 0, 5, 128, 255);
-                renderer.fill(this.Vr, this.Vg, this.Vb, 32);
-                renderer.ellipse(this.xPos, this.yPos, this.size, this.size);
-
                 renderer.fill(this.r, this.g, this.b, this.alpha);
                 renderer.ellipse(this.xPos, this.yPos, this.size, this.size);
 
@@ -130,6 +124,12 @@ class Particle {
         this.currLife = random(this.maxLifeVal) + this.minLifeVal;
         this.xPos = random(this.mainWidth);
         this.yPos = random(this.mainHeight - 200);
+
+    }
+
+    getCurrLife () {
+
+        return this.currLife;
 
     }
 
@@ -254,12 +254,12 @@ class Particle {
 
 class Simulation {
 
-    constructor ({magnetism, deceleration, noiseScale, mouseX, mouseY, renderer, total, radius, rate, r, g, b}) {
+    constructor ({magnetism, deceleration, noiseScale, renderer, total, radius, rate, r, g, b}) {
 
         this.renderer = renderer;
 
         this.runOnce = false;
-        this.drawing = false;
+        this.attracting = false;
 
         if (this.renderer === undefined) {
 
@@ -354,9 +354,9 @@ class Simulation {
 
     }
 
-    draw () {
+    attractor () {
 
-        this.drawing = true;
+        this.attracting = true;
 
         for (let i = 0; i < this.total; i++) {
 
@@ -472,7 +472,7 @@ class Simulation {
                 this.runOnce = true;
 
             }
-            this.draw();
+            this.attractor();
 
 
         } else {
@@ -585,7 +585,7 @@ class Simulation {
     randomCheckEvent () {
 
         // When checked randomise colour with each click
-        if (this.drawing === true && this.runOnce === false) {
+        if (this.attracting === true && this.runOnce === false) {
 
             for (let i = 0; i < this.total; i++) {
 
