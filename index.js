@@ -1,13 +1,15 @@
 let attractor;
 
 function setup() {      // eslint-disable-line no-unused-vars
-           
+    
+    // Can be used as optional p5 renderer:
+    let pg = createGraphics(400, 250);  
+
     attractor =  new Simulation({magnetism:10, deceleration:0.95, noiseScale:1500, total:200, radius:3, rate: 0.5, r:255, g:0, b:0});                                  // eslint-disable-line no-undef
 
     
     document.getElementById("seedOut").textContent = Math.round(attractor.getNoiseSeed());
  
-
 
 }
 function draw() {                                                // eslint-disable-line no-unused-vars
@@ -24,6 +26,7 @@ document.addEventListener("DOMContentLoaded",function(){
     let clearBtn = document.getElementById("clearButton");
     function callClear () {
         attractor.clearButtonFunc();
+        document.getElementById("blendOut").textContent = "Blend";
     }
     clearBtn.addEventListener("click",callClear)
 
@@ -31,6 +34,7 @@ document.addEventListener("DOMContentLoaded",function(){
     function callRandom () {
         let x = attractor.seedButtonFunc();
         document.getElementById("seedOut").textContent = x;
+        document.getElementById("blendOut").textContent = "Blend";
     }
     randomiseBtn.addEventListener("click",callRandom)
 
