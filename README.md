@@ -92,17 +92,17 @@ Within the constructor, I assign `this.` versions of the variables to make them 
 
 #### Check Death Function with Attracting Parameter
 
-The attracting parameter is used to decide when the current life is to be reduced, in my case it is only used when the perlin noise function is active. 
+The attracting parameter is used to decide when the current life is to be reduced, in my case it is only used when the Perlin noise function is active. 
 I also check, whether the particle exceeds the limit of the canvas or has less than 0 life span, and will run the respawn function to respawn the particle. 
 
 #### Colour Particle Function with Renderer and speedColour Parameters
 
 This is the first instance where I have compensated for an inputted renderer. Also, the speed colour variable is true when that specific checkbox is checked. 
-This function checks whether there is an inputted renderer, and will adjust whether there is or isn't by adding `renderer.` in front of graphics tasks. In addition if the speed colour variable is true, the colour of the particles will be defined due to the original attractor's colouring system, by mapping the speed onto RGB values, and using this in the fill method. 
+This function checks whether there is an inputted renderer, and will adjust whether there is or isn't by adding `renderer.` in front of graphics tasks. In addition, if the speed colour variable is true, the colour of the particles will be defined due to the original attractor's colouring system, by mapping the speed onto RGB values and using this in the fill method. 
 
 #### Respawn Method
 
-This does as is described: reassign the current life value, and reassign the x & y positions. These are performed the same way as they would be in the constructor.
+This does as is described: reassign the current life value and reassign the x & y positions. These are performed the same way as they would be in the constructor.
 
 #### Particle Class Getters and Setters
 
@@ -126,7 +126,7 @@ Generally, the getter function will return the requested variable, with `return 
 
 ### Constructor
 
-The constructor for the simulation class takes 9 parameters. Firstly, there is the renderer variable, which allows the programmer to enter a different renderer to use as a graphic, if for example they want a different size image, or want to place the image onto a 3D object like a cube. Next we have the magnetism and deceleration variables, which were used in the original attractor; where magnetism is the strength of attraction to the mouse and the deceleration value is how harshly the particle changes speed when moving towards the mouse. 
+The constructor for the simulation class takes 9 parameters. Firstly, there is the renderer variable, which allows the programmer to enter a different renderer to use as a graphic, if for example they want a different size image, or want to place the image onto a 3D object like a cube. Next, we have the magnetism and deceleration variables, which were used in the original attractor; where magnetism is the strength of attraction to the mouse and the deceleration value is how harshly the particle changes speed when moving towards the mouse. 
 During the constructor, I check whether the renderer is defined and alter the `this.height` and `this.width` depending on renderer height/width or window width/height. I also create all of the particles with the script below: 
 
 ```javascript
@@ -148,11 +148,11 @@ During the constructor, I check whether the renderer is defined and alter the `t
         }
 ```
 As I mentioned earlier, I reference each parameter for making the particle as set using `"xSpeed: 0"`, and according to all eslint rules, the code should be laid out such that all of the parameters are in line on different lines, so I have laid it out like this and it makes it more readable.
-I then apply generic graphics setup, where I set the canvas' parent to the HTML ID attractor, so I can decide where it is placed in the HTML. I also set the ellipse mode, the background colour and the initial blend mode of the class. All of these are within an if statement which checks whether the renderer is defined or not, and will therefore apply these graphical changes to the renderer rather than to the canvas or vice versa . 
+I then apply generic graphics setup, where I set the canvas' parent to the HTML ID attractor, so I can decide where it is placed in the HTML. I also set the ellipse mode, the background colour and the initial blend mode of the class. All of these are within an if statement which checks whether the renderer is defined or not, and will, therefore, apply these graphical changes to the renderer rather than to the canvas or vice versa. 
 
 ### Attractor Method
 
-In the attractor method, I cycle through each particle, and using the getters and setters update the x and y acceleration, speed and position, according to the original script.
+In the attractor method, I cycle through each particle and using the getters and setters update the x and y acceleration, speed and position, according to the original script.
 This is done by calculating the distance between the mouse and the particle, which if it is larger than 3, the acceleration values will be varied according to the magnetic field strength (the variable magnetism), how far away the particle is from the mouse, which is inversely proportional to the distance squared. (`this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance));`) The x and y speeds are then incremented by the acceleration value and multiplied by the deceleration value.
 
 I then update the RGB values of each particle, if the randColour checkbox isn't ticked, and then run the colour particle and check death methods, so that the particles are displayed to the screen every frame.
@@ -168,7 +168,7 @@ I then update the RGB values of each particle, if the randColour checkbox isn't 
  I then have the run method (aka the draw method), which is called every frame. Firstly it checks whether the renderer is undefined or not and draws a black rectangle with a low alpha value, which makes the particles look like they appear to fade. 
 
  The method then checks whether the mouse is not pressed and runs the Perlin Noise function and assigns runOnce to false (I will explain what this does later). If the mouse is pressed, it updates the mouseX and mouseY values and then checks whether the random colour checkbox is pressed, and runOnce is false, so it will update the colours of all of the particles so that each one is different. The this.runOnce is then used to make sure it only runs once rather than every frame the mouse button is held down.
- After those checks, the attractor method is ran when the mouse is down.
+ After those checks, the attractor method is run when the mouse is down.
  The final check for the function is that if the renderer is assigned then it will update the image it is placed on. 
 
  ### Clear Button Function
@@ -207,7 +207,7 @@ I then update the RGB values of each particle, if the randColour checkbox isn't 
 
  ### Random Seed Button Function
 
-This randomises the noise seed by a factor of 100000 with `noiseSeed(random() * 100000)`, and returns the rounded value of this to be displayed on the screen. with `return Math.round(this.noiseSeed)`
+This randomises the noise seed by a factor of 100000 with `noiseSeed(random() * 100000)` and returns the rounded value of this to be displayed on the screen. with `return Math.round(this.noiseSeed)`
 
 ### Update Total Particles Function
 
@@ -235,7 +235,7 @@ If I need to make more particles I:
 
 ```
 use the for loop from the current total up to the new total value and instantiate more each particle through each loop.
-If i need to remove particles I:
+If I need to remove particles I:
 ``` javascript
         else if (this.total > value) {
 
@@ -252,7 +252,7 @@ Which loops from total to the new total, and deletes each instance of a particle
 
 ### Random Check Event Method 
 
-This only happens once when the run method switches from Perlin noise to attracting functions and when the random colour check box is ticked (hence the name of the function). The function uses a for loop to cycle through each particle and randomly generates an RGB value for the particle. Then finally sets the runOnce variable to true to stop trying to rerandomise the colour on the next frame. 
+This only happens once when the run method switches from Perlin noise to attracting functions and when the random colour checkbox is ticked (hence the name of the function). The function uses a for loop to cycle through each particle and randomly generates an RGB value for the particle. Then finally sets the runOnce variable to true to stop trying to re-randomise the colour on the next frame. 
 ```javascript
         // When checked randomise colour with each click
         for (let i = 0; i < this.total; i++) {
@@ -267,7 +267,7 @@ This only happens once when the run method switches from Perlin noise to attract
 ```
 ### Change Blend Mode Function
 
-The last main method is used to cycle through the blend mode for the canvas. This is done through incrementing `this.blendChange`, after each click of the button and using a switch statement to check which `this.blendChange` value corresponds to which blendMode. I also return the name of the current blend mode in order for index.js to receive this and copy that text to the html page in order to display to the user what the current blend mode is. 
+The last main method is used to cycle through the blend mode for the canvas. This is done through incrementing `this.blendChange`, after each click of the button and using a switch statement to check which `this.blendChange` value corresponds to which blendMode. I also return the name of the current blend mode in order for index.js to receive this and copy that text to the HTML page in order to display to the user what the current blend mode is. 
 As previously mentioned I have to account for this.renderer's parameter so I have a simple if statement which checks this and if it is defined it will do `this.renderer.blendMode` instead: 
 
 ```javascript
