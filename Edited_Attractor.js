@@ -326,7 +326,7 @@ class Simulation {
 
         if (this.renderer === undefined) {
 
-            this.canvas = createCanvas(this.width * 2 / 3, this.height);
+            this.canvas = createCanvas(this.width * 2 / 3 + 70, this.height);
             this.canvas.parent("attractor");
 
             noStroke();
