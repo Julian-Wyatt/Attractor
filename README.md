@@ -214,7 +214,7 @@ This randomises the noise seed by a factor of 100000 with `noiseSeed(random() * 
 This takes in a parameter of value, which is the current slider value for total particles, which is sent across when the event is triggered (which is defined as when the slider changes). I then find out whether the current number of particles on the screen is too little/ too big, by finding which is bigger.
 If I need to make more particles I: 
 ```javascript
-    for (let i = this.total; i < value; i++) {
+            for (let i = this.total; i < value; i++) {
 
 
                 this.particles[i] = new Particle({"xPos": Math.round(Math.random() * this.width),
@@ -237,7 +237,7 @@ If I need to make more particles I:
 use the for loop from the current total up to the new total value and instantiate more each particle through each loop.
 If i need to remove particles I:
 ``` javascript
-    else if (this.total > value) {
+        else if (this.total > value) {
 
             for (let i = this.total; i > value; i--) {
 
