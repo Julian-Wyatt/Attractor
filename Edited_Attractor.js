@@ -314,7 +314,7 @@ class Simulation {
             this.particles[particle] = new Particle({"xPos": Math.round(Math.random() * this.width),
                 "yPos": Math.round(Math.random() * this.height),
                 "size": this.radius,
-                
+
                 "red": 255,
                 "green": 0,
                 "blue": 0});
@@ -393,7 +393,7 @@ class Simulation {
             }
 
             this.particles[i].colorParticle(this.renderer, this.speedColour);
-            this.particles[i].checkDeath(true);
+            this.particles[i].checkDeath(false);
 
         }
 
@@ -425,7 +425,7 @@ class Simulation {
 
             this.particles[i].colorParticle(this.renderer, this.speedColour);
 
-            this.particles[i].checkDeath(false);
+            this.particles[i].checkDeath(true);
 
             smooth();
 
