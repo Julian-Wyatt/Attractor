@@ -86,7 +86,7 @@ My particle class has a constructor, which enables the programmer to set default
 ```
 This means that when a new particle is created, you can list which variables you chose to assign, as obviously most are changed at runtime so don't necessarily need to be assigned on construction. (red, green, blue for example). 
 
-These 10 parameters, each control different aspects of the particle, some designed for individual particles while others are for all particles. When instantiated, the xPos and yPos are random values between 0 and the height/ width of the screen, whilst the speeds and accelerations need to default to 0, and the colour attributes take a default value of red at the beginning and can be edited by the slider on the HTML page in real time. 
+These 10 parameters, each control different aspects of the particle, some designed for individual particles while others are for all particles. When instantiated, the xPos and yPos are random values between 0 and the height/ width of the screen, whilst the speeds and accelerations need to default to 0 (with the || attribute), and the colour attributes take a default value of red at the beginning and can be edited by the slider on the HTML page in real time. 
 
 Within the constructor, I assign `this.` versions of the variables to make them individual for every particle, and for size and colour I assign them to the `Particle.prototype.`, so they change for every instance of the particles. I also assign a max life value as a `random(max) + min`. 
 
@@ -315,3 +315,6 @@ As previously mentioned I have to account for this.renderer's parameter so I hav
             } 
         }  
 ```
+### Getters and Setters
+
+The final section for this class and script are the getters and setters for each variable, which are in the same form as above, however some change the `Particle.prototype` value, so that it changes for every Particle. 
