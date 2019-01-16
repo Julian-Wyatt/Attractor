@@ -153,7 +153,11 @@ I then apply generic graphics setup, where I set the canvas' parent to the HTML 
 ### Attractor Method
 
 In the attractor method, I cycle through each particle and using the getters and setters update the x and y acceleration, speed and position, according to the original script.
-This is done by calculating the distance between the mouse and the particle, which if it is larger than 3, the acceleration values will be varied according to the magnetic field strength (the variable magnetism), how far away the particle is from the mouse, which is inversely proportional to the distance squared. (`this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance));`) The x and y speeds are then incremented by the acceleration value and multiplied by the deceleration value.
+This is done by calculating the distance between the mouse and the particle, which if it is larger than 3, the acceleration values will be varied according to the magnetic field strength (the variable magnetism), how far away the particle is from the mouse, which is inversely proportional to the distance squared. 
+```javascript 
+this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance));
+``` 
+The x and y speeds are then incremented by the acceleration value and multiplied by the deceleration value.
 
 I then update the RGB values of each particle, if the randColour checkbox isn't ticked, and then run the colour particle and check death methods, so that the particles are displayed to the screen every frame.
 
