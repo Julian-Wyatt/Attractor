@@ -14,6 +14,7 @@
 /* eslint sort-keys:0*/
 /* eslint no-lonely-if:0*/
 /* eslint complexity:0*/
+/* eslint no-else-return:0*/
 
 /*
  * Particle class in order to define attributes for each unqiue particle
@@ -260,8 +261,17 @@ class Simulation {
         this.runOnce = false;
         this.drawing = false;
 
-        this.height = windowHeight;
-        this.width = windowWidth;
+        if (this.renderer === undefined) {
+
+            this.height = windowHeight - 300;
+            this.width = windowWidth;
+
+        } else {
+
+            this.height = this.renderer.height;
+            this.width = this.renderer.width;
+
+        }
 
         this.rate = rate;
 
@@ -292,7 +302,7 @@ class Simulation {
         for (let particle = 0; particle < this.total; particle++) {
 
             this.particles[particle] = new Particle({"xPos": Math.round(Math.random() * this.width),
-                "yPos": Math.round(Math.random() * (this.height - 300)),
+                "yPos": Math.round(Math.random() * this.height),
                 "size": this.radius,
                 "xSpeed": 0,
                 "ySpeed": 0,
@@ -316,34 +326,26 @@ class Simulation {
 
         if (this.renderer === undefined) {
 
-            this.canvas = createCanvas(this.width * 3 / 4, this.height - 100);
+            this.canvas = createCanvas(this.width * 2 / 3, this.height);
             this.canvas.parent("attractor");
 
             noStroke();
             fill(0);
             ellipseMode(RADIUS);
             background(0);
-            // White rectangle for buttons and sliders
-            fill(this.maxColour);
-            rect(0, this.height - 200, this.width, 200);
-
-            // Can use switch case to change blend mode on button press
             blendMode(BLEND);
 
         } else {
 
-            this.renderer.canvas = createCanvas(this.width * 3 / 4, this.height - 100);
-            this.renderer.canvas.parent("attractor");
+
+            this.canvas = createCanvas(this.width * 2 / 3, this.height);
+            this.canvas.parent("attractor");
             this.renderer.noStroke();
             this.renderer.fill(0);
             this.renderer.ellipseMode(RADIUS);
             this.renderer.background(0);
-            // White rectangle for buttons and sliders
-            this.renderer.fill(this.maxColour);
-            this.renderer.rect(0, this.height - 200, this.width, 200);
-
-            // Can use switch case to change blend mode on button press
             this.renderer.blendMode(BLEND);
+
 
         }
         this.noiseSeed = random() * 100000;
@@ -351,7 +353,6 @@ class Simulation {
 
 
     }
-
 
     draw () {
 
@@ -432,8 +433,17 @@ class Simulation {
 
         // Black rectangle which also gets trail to fade
 
-        fill(0, 0, 0, 5);
-        rect(0, 0, this.width, this.height - 200);
+        if (this.renderer === undefined) {
+
+            fill(0, 0, 0, 5);
+            rect(0, 0, this.width, this.height + 100);
+
+        } else {
+
+            this.renderer.fill(0, 0, 0, 5);
+            this.renderer.rect(0, 0, this.width, this.height);
+
+        }
 
         if (mouseIsPressed === false) {
 
@@ -441,7 +451,7 @@ class Simulation {
 
             this.runOnce = false;
 
-        } else if (mouseY < this.height - 200) {
+        } else if (mouseY < this.height + 100) {
 
             this.mouseX = mouseX;
             this.mouseY = mouseY;
@@ -471,16 +481,37 @@ class Simulation {
 
         }
 
+        if (this.renderer !== undefined) {
+
+            image(this.renderer, 0, 0);
+
+        }
+
     }
 
     clearButtonFunc () {
 
-        blendMode(BLEND);
-        fill(0, 0, 0);
-        rect(0, 0, windowWidth, windowHeight - 200);
-        for (let i = 0; i < this.total; i++) {
+        if (this.renderer === undefined) {
 
-            this.particles[i].respawn();
+            blendMode(BLEND);
+            fill(0, 0, 0);
+            rect(0, 0, this.width, this.height + 100);
+            for (let i = 0; i < this.total; i++) {
+
+                this.particles[i].respawn();
+
+            }
+
+        } else {
+
+            this.renderer.blendMode(BLEND);
+            this.renderer.fill(0, 0, 0);
+            this.renderer.rect(0, 0, this.width, this.Height);
+            for (let i = 0; i < this.total; i++) {
+
+                this.particles[i].respawn();
+
+            }
 
         }
 
@@ -489,13 +520,27 @@ class Simulation {
 
     seedButtonFunc () {
 
-        blendMode(BLEND);
-        fill(0, 0, 0);
-        rect(0, 0, this.width, this.height - 200);
-        this.noiseSeed = random() * 100000;
-        noiseSeed(this.noiseSeed);
+        if (this.renderer === undefined) {
 
-        return Math.round(this.noiseSeed);
+            blendMode(BLEND);
+            fill(0, 0, 0);
+            rect(0, 0, this.width, this.height + 100);
+            this.noiseSeed = random() * 100000;
+            noiseSeed(this.noiseSeed);
+
+            return Math.round(this.noiseSeed);
+
+        } else {
+
+            this.renderer.blendMode(BLEND);
+            this.renderer.fill(0, 0, 0);
+            this.renderer.rect(0, 0, this.width, this.height);
+            this.noiseSeed = random() * 100000;
+            noiseSeed(this.noiseSeed);
+
+            return Math.round(this.noiseSeed);
+
+        }
 
     }
 
@@ -506,8 +551,9 @@ class Simulation {
 
             for (let i = this.total; i < value; i++) {
 
+
                 this.particles[i] = new Particle({"xPos": Math.round(Math.random() * this.width),
-                    "yPos": Math.round(Math.random() * (this.height - 200)),
+                    "yPos": Math.round(Math.random() * this.height),
                     "xSpeed": 0,
                     "ySpeed": 0,
                     "xAccn": 0,
