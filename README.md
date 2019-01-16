@@ -1,5 +1,5 @@
 # Attractor
-Please see the original at [Open Processing](https://www.openprocessing.org/sketch/424081).
+Please see the original at [Open Processing](https://www.openprocessing.org/sketch/424081), which is a fork of "Attractor 0" by Masaki Yamabe. (Please see the original I've edited for translations).
 Which is licensed under [Creative Commons Attribution ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The license is also stored in the git repository for this project.
 
 ## Programming Summative 
