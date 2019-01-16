@@ -475,11 +475,7 @@ class Simulation {
             this.attractor();
 
 
-        } else {
-
-            this.perlinNoise();
-
-        }
+        } 
 
         if (this.renderer !== undefined) {
 
@@ -520,27 +516,10 @@ class Simulation {
 
     seedButtonFunc () {
 
-        if (this.renderer === undefined) {
+        this.noiseSeed = random() * 100000;
+        noiseSeed(this.noiseSeed);
 
-            blendMode(BLEND);
-            fill(0, 0, 0);
-            rect(0, 0, this.width, this.height + 100);
-            this.noiseSeed = random() * 100000;
-            noiseSeed(this.noiseSeed);
-
-            return Math.round(this.noiseSeed);
-
-        } else {
-
-            this.renderer.blendMode(BLEND);
-            this.renderer.fill(0, 0, 0);
-            this.renderer.rect(0, 0, this.width, this.height);
-            this.noiseSeed = random() * 100000;
-            noiseSeed(this.noiseSeed);
-
-            return Math.round(this.noiseSeed);
-
-        }
+        return Math.round(this.noiseSeed);
 
     }
 
@@ -585,21 +564,17 @@ class Simulation {
     randomCheckEvent () {
 
         // When checked randomise colour with each click
-        if (this.attracting === true && this.runOnce === false) {
+        for (let i = 0; i < this.total; i++) {
 
-            for (let i = 0; i < this.total; i++) {
-
-                this.particles[i].setRed(Math.round(random(this.maxColour)));
-                this.particles[i].setGreen(Math.round(random(this.maxColour)));
-                this.particles[i].setBlue(Math.round(random(this.maxColour)));
-                this.particles[i].colorParticle(this.renderer, this.speedColour);
-                // Console.log('Checking!');
-
-            }
-
-            this.runOnce = true;
+            this.particles[i].setRed(Math.round(random(this.maxColour)));
+            this.particles[i].setGreen(Math.round(random(this.maxColour)));
+            this.particles[i].setBlue(Math.round(random(this.maxColour)));
 
         }
+
+        this.runOnce = true;
+
+
 
     }
 
