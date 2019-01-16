@@ -1,4 +1,5 @@
 /* eslint no-undef:0*/
+/* eslint no-undefined:0*/
 /* eslint no-unused-vars:0*/
 /* eslint max-classes-per-file:0*/
 /* eslint max-len:0*/
@@ -11,6 +12,8 @@
 /* eslint no-plusplus:0*/
 /* eslint id-length:0*/
 /* eslint sort-keys:0*/
+/* eslint no-lonely-if:0*/
+/* eslint complexity:0*/
 
 /*
  * Particle class in order to define attributes for each unqiue particle
@@ -68,16 +71,55 @@ class Particle {
     }
 
 
-    colorParticle () {
+    colorParticle (renderer, speedColour) {
 
-        const speed = dist(0, 0, this.xSpeed, this.ySpeed) * this.maxColour % this.maxColour;
+        if (renderer === undefined) {
 
-        // Fill(255,0,0,32);   set to red
+            if (speedColour) {
+
+                const speed = dist(0, 0, this.xSpeed, this.ySpeed);
+                this.Vr = map(speed, 0, 5, 0, 255);
+                this.Vg = map(speed, 0, 5, 64, 255);
+                this.Vb = map(speed, 0, 5, 128, 255);
+                fill(this.Vr, this.Vg, this.Vb, 32);
+                ellipse(this.xPos, this.yPos, this.size, this.size);
 
 
-        fill(this.r, this.g, this.b, this.alpha);
-        ellipse(this.xPos, this.yPos, this.size, this.size);
+            } else {
 
+                fill(this.r, this.g, this.b, this.alpha);
+                ellipse(this.xPos, this.yPos, this.size, this.size);
+
+            }
+
+
+        } else {
+
+            if (speedColour) {
+
+                const speed = dist(0, 0, this.xSpeed, this.ySpeed);
+                this.Vr = map(speed, 0, 5, 0, 255);
+                this.Vg = map(speed, 0, 5, 64, 255);
+                this.Vb = map(speed, 0, 5, 128, 255);
+                renderer.fill(this.Vr, this.Vg, this.Vb, 32);
+                renderer.ellipse(this.xPos, this.yPos, this.size, this.size);
+
+            } else {
+
+                const speed = dist(0, 0, this.xSpeed, this.ySpeed);
+                this.Vr = map(speed, 0, 5, 0, 255);
+                this.Vg = map(speed, 0, 5, 64, 255);
+                this.Vb = map(speed, 0, 5, 128, 255);
+                renderer.fill(this.Vr, this.Vg, this.Vb, 32);
+                renderer.ellipse(this.xPos, this.yPos, this.size, this.size);
+
+                renderer.fill(this.r, this.g, this.b, this.alpha);
+                renderer.ellipse(this.xPos, this.yPos, this.size, this.size);
+
+            }
+
+
+        }
 
     }
 
@@ -87,6 +129,13 @@ class Particle {
         this.currLife = random(this.maxLifeVal) + this.minLifeVal;
         this.xPos = random(this.mainWidth);
         this.yPos = random(this.mainHeight - 200);
+
+    }
+
+    getFlip () {
+
+        // Dont need set this.flip as it is assigned on particle instantiation and shouldn't be changed
+        return this.flip;
 
     }
 
@@ -206,6 +255,7 @@ class Simulation {
 
     constructor ({magnetism, deceleration, noiseScale, mouseX, mouseY, renderer, total, radius, rate, r, g, b}) {
 
+        this.renderer = renderer;
 
         this.runOnce = false;
         this.drawing = false;
@@ -237,8 +287,7 @@ class Simulation {
 
         this.blendChange = 0;
 
-        this.setup();
-
+        this.speedColour = false;
 
         for (let particle = 0; particle < this.total; particle++) {
 
@@ -258,28 +307,48 @@ class Simulation {
         }
 
         this.noiseSeed = 0;
+        this.setup();
 
     }
 
 
     setup () {
 
+        if (this.renderer === undefined) {
 
-        this.canvas = createCanvas(this.width * 3 / 4, this.height - 100);
-        this.canvas.parent("attractor");
+            this.canvas = createCanvas(this.width * 3 / 4, this.height - 100);
+            this.canvas.parent("attractor");
 
-        noStroke();
-        fill(0);
-        ellipseMode(RADIUS);
-        background(0);
-        // White rectangle for buttons and sliders
-        fill(this.maxColour);
-        rect(0, this.height - 200, this.width, 200);
+            noStroke();
+            fill(0);
+            ellipseMode(RADIUS);
+            background(0);
+            // White rectangle for buttons and sliders
+            fill(this.maxColour);
+            rect(0, this.height - 200, this.width, 200);
 
-        // Can use switch case to change blend mode on button press
-        blendMode(BLEND);
+            // Can use switch case to change blend mode on button press
+            blendMode(BLEND);
+
+        } else {
+
+            this.renderer.canvas = createCanvas(this.width * 3 / 4, this.height - 100);
+            this.renderer.canvas.parent("attractor");
+            this.renderer.noStroke();
+            this.renderer.fill(0);
+            this.renderer.ellipseMode(RADIUS);
+            this.renderer.background(0);
+            // White rectangle for buttons and sliders
+            this.renderer.fill(this.maxColour);
+            this.renderer.rect(0, this.height - 200, this.width, 200);
+
+            // Can use switch case to change blend mode on button press
+            this.renderer.blendMode(BLEND);
+
+        }
         this.noiseSeed = random() * 100000;
         noiseSeed(this.noiseSeed);
+
 
     }
 
@@ -294,28 +363,29 @@ class Simulation {
 
             if (distance > 3) {
 
-                this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance))
+                this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance));
                 this.particles[i].setYAccn(this.magnetism * (this.mouseY - this.particles[i].getYPos()) / (distance * distance));
 
             }
-            this.particles[i].xSpeed += this.particles[i].xAccn;
-            this.particles[i].ySpeed += this.particles[i].yAccn;
+            this.particles[i].setXSpeed(this.particles[i].getXSpeed() + this.particles[i].getXAccn());
+            this.particles[i].setYSpeed(this.particles[i].getYSpeed() + this.particles[i].getYAccn());
 
-            this.particles[i].xSpeed *= this.deceleration;
-            this.particles[i].ySpeed *= this.deceleration;
+            this.particles[i].setXSpeed(this.particles[i].getXSpeed() * this.deceleration);
+            this.particles[i].setYSpeed(this.particles[i].getYSpeed() * this.deceleration);
 
-            this.particles[i].xPos += this.particles[i].xSpeed;
-            this.particles[i].yPos += this.particles[i].ySpeed;
+            this.particles[i].setXPos(this.particles[i].getXPos() + this.particles[i].getXSpeed());
+            this.particles[i].setYPos(this.particles[i].getYPos() + this.particles[i].getYSpeed());
+
 
             if (!this.randColour) {
 
-                this.particles[i].r = this.r;
-                this.particles[i].g = this.g;
-                this.particles[i].b = this.b;
+                this.particles[i].setRed(this.r);
+                this.particles[i].setGreen(this.g);
+                this.particles[i].setBlue(this.b);
 
             }
 
-            this.particles[i].colorParticle();
+            this.particles[i].colorParticle(this.renderer, this.speedColour);
             this.particles[i].checkDeath(true);
 
         }
@@ -329,24 +399,24 @@ class Simulation {
 
         for (let i = 0; i < this.total; i++) {
 
-            const angle = noise(this.particles[i].xPos / this.noiseScale, this.particles[i].yPos / this.noiseScale) * 2 * Math.PI * this.noiseScale * this.particles[i].flip;
+            const angle = noise(this.particles[i].getXPos() / this.noiseScale, this.particles[i].getYPos() / this.noiseScale) * 2 * Math.PI * this.noiseScale * this.particles[i].getFlip();
 
-            this.particles[i].ySpeed = lerp(this.particles[i].ySpeed, Math.sin(angle) * this.rate, 0.4);
-            this.particles[i].xSpeed = lerp(this.particles[i].xSpeed, Math.cos(angle) * this.rate, 0.4);
+            this.particles[i].setXSpeed(lerp(this.particles[i].getXSpeed(), Math.cos(angle) * this.rate, 0.4));
+            this.particles[i].setYSpeed(lerp(this.particles[i].getYSpeed(), Math.sin(angle) * this.rate, 0.4));
 
-            this.particles[i].xPos += this.particles[i].xSpeed;
-            this.particles[i].yPos += this.particles[i].ySpeed;
+            this.particles[i].setXPos(this.particles[i].getXPos() + this.particles[i].getXSpeed());
+            this.particles[i].setYPos(this.particles[i].getYPos() + this.particles[i].getYSpeed());
 
 
             if (!this.randColour) {
 
-                this.particles[i].r = this.r;
-                this.particles[i].g = this.g;
-                this.particles[i].b = this.b;
+                this.particles[i].setRed(this.r);
+                this.particles[i].setGreen(this.g);
+                this.particles[i].setBlue(this.b);
 
             }
 
-            this.particles[i].colorParticle();
+            this.particles[i].colorParticle(this.renderer, this.speedColour);
 
             this.particles[i].checkDeath(false);
 
@@ -380,7 +450,7 @@ class Simulation {
 
                 for (let i = 0; i < this.total; i++) {
 
-                    this.particles[i].colorParticle();
+                    this.particles[i].colorParticle(this.renderer, this.speedColour);
                     // Console.log('Checking!');
 
                 }
@@ -416,15 +486,16 @@ class Simulation {
 
     }
 
+
     seedButtonFunc () {
 
         blendMode(BLEND);
         fill(0, 0, 0);
-        rect(0, 0, windowWidth, windowHeight - 200);
-        this.x = random() * 100000;
-        noiseSeed(x);
+        rect(0, 0, this.width, this.height - 200);
+        this.noiseSeed = random() * 100000;
+        noiseSeed(this.noiseSeed);
 
-        return Math.round(x);
+        return Math.round(this.noiseSeed);
 
     }
 
@@ -475,7 +546,7 @@ class Simulation {
                 this.particles[i].setRed(Math.round(random(this.maxColour)));
                 this.particles[i].setGreen(Math.round(random(this.maxColour)));
                 this.particles[i].setBlue(Math.round(random(this.maxColour)));
-                this.particles[i].colorParticle();
+                this.particles[i].colorParticle(this.renderer, this.speedColour);
                 // Console.log('Checking!');
 
             }
@@ -489,47 +560,99 @@ class Simulation {
     changeBlendMode () {
 
         this.blendChange++;
+        if (this.renderer === undefined) {
 
-        switch (this.blendChange % 12) {
+            switch (this.blendChange % 12) {
 
-        default:
-            blendMode(BLEND);
-            return "Blend";
-        case 1:
-            blendMode(ADD);
-            return "Add";
-        case 2:
-            blendMode(LIGHTEST);
-            return "Lightest";
-        case 3:
-            blendMode(DIFFERENCE);
-            return "Difference";
-        case 4:
-            blendMode(EXCLUSION);
-            return "Exclusion";
-        case 5:
-            blendMode(MULTIPLY);
-            return "Multiply";
-        case 6:
-            blendMode(SCREEN);
-            return "Screen";
-        case 7:
-            blendMode(OVERLAY);
-            return "Overlay";
-        case 8:
-            blendMode(HARD_LIGHT);
-            return "Hard Light";
-        case 9:
-            blendMode(SOFT_LIGHT);
-            return "Soft Light";
-        case 10:
-            blendMode(DODGE);
-            return "Dodge";
-        case 11:
-            blendMode(BURN);
-            return "Burn";
+            default:
+                blendMode(BLEND);
+                return "Blend";
+            case 1:
+                blendMode(ADD);
+                return "Add";
+            case 2:
+                blendMode(LIGHTEST);
+                return "Lightest";
+            case 3:
+                blendMode(DIFFERENCE);
+                return "Difference";
+            case 4:
+                blendMode(EXCLUSION);
+                return "Exclusion";
+            case 5:
+                blendMode(MULTIPLY);
+                return "Multiply";
+            case 6:
+                blendMode(SCREEN);
+                return "Screen";
+            case 7:
+                blendMode(OVERLAY);
+                return "Overlay";
+            case 8:
+                blendMode(HARD_LIGHT);
+                return "Hard Light";
+            case 9:
+                blendMode(SOFT_LIGHT);
+                return "Soft Light";
+            case 10:
+                blendMode(DODGE);
+                return "Dodge";
+            case 11:
+                blendMode(BURN);
+                return "Burn";
+
+            }
+
+        } else {
+
+            switch (this.blendChange % 12) {
+
+            default:
+                this.renderer.blendMode(BLEND);
+                return "Blend";
+            case 1:
+                this.renderer.blendMode(ADD);
+                return "Add";
+            case 2:
+                this.renderer.blendMode(LIGHTEST);
+                return "Lightest";
+            case 3:
+                this.renderer.blendMode(DIFFERENCE);
+                return "Difference";
+            case 4:
+                this.renderer.blendMode(EXCLUSION);
+                return "Exclusion";
+            case 5:
+                this.renderer.blendMode(MULTIPLY);
+                return "Multiply";
+            case 6:
+                this.renderer.blendMode(SCREEN);
+                return "Screen";
+            case 7:
+                this.renderer.blendMode(OVERLAY);
+                return "Overlay";
+            case 8:
+                this.renderer.blendMode(HARD_LIGHT);
+                return "Hard Light";
+            case 9:
+                this.renderer.blendMode(SOFT_LIGHT);
+                return "Soft Light";
+            case 10:
+                this.renderer.blendMode(DODGE);
+                return "Dodge";
+            case 11:
+                this.renderer.blendMode(BURN);
+                return "Burn";
+
+            }
 
         }
+
+    }
+
+    getNoiseSeed () {
+
+        return this.noiseSeed;
 
     }
 
@@ -639,6 +762,29 @@ class Simulation {
 
     }
 
+    setRenderer (value) {
+
+        this.renderer = value;
+
+    }
+
+    getRenderer () {
+
+        return this.renderer;
+
+    }
+
+    setSpeedColour (value) {
+
+        this.speedColour = value;
+
+    }
+
+    getSpeedColour () {
+
+        return this.speedColour;
+
+    }
 
 }
 
