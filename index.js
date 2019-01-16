@@ -4,6 +4,11 @@ function setup() {      // eslint-disable-line no-unused-vars
            
     attractor =  new Simulation({magnetism:10, deceleration:0.95, noiseScale:1500, total:200, radius:3, rate: 0.5, r:255, g:0, b:0});                                  // eslint-disable-line no-undef
 
+    
+    document.getElementById("seedOut").textContent = Math.round(attractor.getNoiseSeed());
+ 
+
+
 }
 function draw() {                                                // eslint-disable-line no-unused-vars
 
@@ -14,6 +19,7 @@ function draw() {                                                // eslint-disab
 
 
 document.addEventListener("DOMContentLoaded",function(){
+
 
     let clearBtn = document.getElementById("clearButton");
     function callClear () {
@@ -70,7 +76,6 @@ document.addEventListener("DOMContentLoaded",function(){
 
 
 
-
     let radiusSlider = document.getElementById("radiusSlider");
     function setRadius(event){
         let radiusVal = radiusSlider.value;
@@ -114,6 +119,14 @@ document.addEventListener("DOMContentLoaded",function(){
         
     }
     randomCheckbox.addEventListener("change",setRandColour);
+
+    let speedCheckbox = document.getElementById("speedColour");
+    
+    function setSpeedColour(event){
+        attractor.setSpeedColour(speedCheckbox.checked);
+        
+    }
+    speedCheckbox.addEventListener("change",setSpeedColour);
 
 
 
