@@ -26,17 +26,29 @@ class Particle {
 
     constructor ({xPos, yPos, size, xSpeed, ySpeed, xAccn, yAccn, red, green, blue}) {
 
-        this.xPos = xPos;
-        this.yPos = yPos;
 
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-        this.xAccn = xAccn;
-        this.yAccn = yAccn;
+        if (this.renderer === undefined) {
 
-        Particle.prototype.r = red;
-        Particle.prototype.g = green;
-        Particle.prototype.b = blue;
+            this.mainHeight = windowHeight ;
+            this.mainWidth = windowWidth;
+
+        } else {
+
+            this.mainHeight = this.renderer.height;
+            this.mainWidth = this.renderer.width;
+
+        }
+        this.xPos = xPos || random(this.mainWidth);
+        this.yPos = yPos || random(this.mainHeight);
+
+        this.xSpeed = xSpeed || 0;
+        this.ySpeed = ySpeed || 0;
+        this.xAccn = xAccn || 0;
+        this.yAccn = yAccn || 0;
+
+        Particle.prototype.r = red || 255;
+        Particle.prototype.g = green || 0;
+        Particle.prototype.b = blue || 0;
 
         this.flip = Math.round(Math.random() * 2) * 2 - 1;
 
@@ -44,12 +56,10 @@ class Particle {
         this.minLifeVal = 10;
         this.maxLife = random(this.maxRandLifeVal) + this.minLifeVal;
         this.currLife = this.maxLife;
-        this.mainHeight = windowHeight;
-        this.mainWidth = windowWidth;
         this.maxColour = 255;
         this.alpha = 32;
 
-        Particle.prototype.size = size;
+        Particle.prototype.size = size || 3;
 
 
     }
@@ -256,7 +266,7 @@ class Simulation {
 
     constructor ({magnetism, deceleration, noiseScale, renderer, total, radius, rate, r, g, b}) {
 
-        this.renderer = renderer;
+        this.renderer = renderer || undefined;
 
         this.runOnce = false;
         this.attracting = false;
@@ -273,24 +283,24 @@ class Simulation {
 
         }
 
-        this.rate = rate;
+        this.rate = rate || 0.5;
 
-        this.radius = radius;
+        this.radius = radius || 3;
         this.maxColour = 255;
 
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        this.r = r || 255;
+        this.g = g || 0;
+        this.b = b || 0;
 
-        this.total = total;
+        this.total = total || 200;
 
         this.randColour = false;
 
-        this.magnetism = magnetism;
-        this.deceleration = deceleration;
+        this.magnetism = magnetism || 10;
+        this.deceleration = deceleration || 0.95;
 
         this.particles = new Array(this.total);
-        this.noiseScale = noiseScale;
+        this.noiseScale = noiseScale || int(random(800,2001));
 
         this.mouseX = mouseX;
         this.mouseY = mouseY;
@@ -304,11 +314,7 @@ class Simulation {
             this.particles[particle] = new Particle({"xPos": Math.round(Math.random() * this.width),
                 "yPos": Math.round(Math.random() * this.height),
                 "size": this.radius,
-                "xSpeed": 0,
-                "ySpeed": 0,
-                "xAccn": 0,
-                "yAccn": 0,
-
+                
                 "red": 255,
                 "green": 0,
                 "blue": 0});
@@ -533,10 +539,6 @@ class Simulation {
 
                 this.particles[i] = new Particle({"xPos": Math.round(Math.random() * this.width),
                     "yPos": Math.round(Math.random() * this.height),
-                    "xSpeed": 0,
-                    "ySpeed": 0,
-                    "xAccn": 0,
-                    "yAccn": 0,
 
                     "red": this.r,
                     "green": this.g,
