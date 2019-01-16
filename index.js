@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
     let randomiseBtn = document.getElementById("randomiseButton");
     function callRandom () {
+        attractor.clearButtonFunc();
         let x = attractor.seedButtonFunc();
         document.getElementById("seedOut").textContent = x;
         document.getElementById("blendOut").textContent = "Blend";
