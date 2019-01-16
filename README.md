@@ -29,6 +29,7 @@ Index.js contains the code to link the html to my main simulation class, which i
 
 It's from index.js where I instantiate my simulation class, and add all my event listeners. See below where I instantiate and add one event listener: 
 
+```javascript
         let attractor;
 
         function setup() {
@@ -56,3 +57,6 @@ It's from index.js where I instantiate my simulation class, and add all my event
         totalSlider.addEventListener("input",setTotal);
 
         }
+```
+
+As you can see, the event listener is added when the page is loaded, and this function finds the total slider, and when it is moved (the `javascript totalSlider.addEventListener("input",setTotal);`)ie the slider value is changed, it finds the output html tag and places what the new value is -1 and runs the update total particles function from the simulation class with this new total value.
