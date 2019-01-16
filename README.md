@@ -29,8 +29,8 @@ The two checkboxes are used to activate preset colour functions, one which keeps
 
 Index.js contains the code to link the HTML to my main simulation class, which is linked from my HTML as below:
 ```html
-            <script src="Edited_Attractor.js"></script>
-            <script src="index.js"></script>
+        <script src="Edited_Attractor.js"></script>
+        <script src="index.js"></script>
 ```
 
 It's from index.js where I instantiate my simulation class and add all my event listeners. See below where I instantiate and add one event listener: 
@@ -90,9 +90,9 @@ These 10 parameters, each control different aspects of the particle, some design
 
 Within the constructor, I assign `this.` versions of the variables to make them individual for every particle, and for size and colour I assign them to the `Particle.prototype.`, so they change for every instance of the particles. I also assign a max life value as a `random(max) + min`. 
 
-#### Check Death Function with Drawing Parameter
+#### Check Death Function with Attracting Parameter
 
-The drawing parameter is used to decide when the current life is to be reduced, in my case it is only used when the perlin noise function is active. 
+The attracting parameter is used to decide when the current life is to be reduced, in my case it is only used when the perlin noise function is active. 
 I also check, whether the particle exceeds the limit of the canvas or has less than 0 life span, and will run the respawn function to respawn the particle. 
 
 #### Colour Particle Function with Renderer and speedColour Parameters
@@ -150,6 +150,168 @@ During the constructor, I check whether the renderer is defined and alter the `t
 As I mentioned earlier, I reference each parameter for making the particle as set using `"xSpeed: 0"`, and according to all eslint rules, the code should be laid out such that all of the parameters are in line on different lines, so I have laid it out like this and it makes it more readable.
 I then apply generic graphics setup, where I set the canvas' parent to the HTML ID attractor, so I can decide where it is placed in the HTML. I also set the ellipse mode, the background colour and the initial blend mode of the class. All of these are within an if statement which checks whether the renderer is defined or not, and will therefore apply these graphical changes to the renderer rather than to the canvas or vice versa . 
 
-### Draw Method
+### Attractor Method
 
 In the attractor method, I cycle through each particle, and using the getters and setters update the x and y acceleration, speed and position, according to the original script.
+This is done by calculating the distance between the mouse and the particle, which if it is larger than 3, the acceleration values will be varied according to the magnetic field strength (the variable magnetism), how far away the particle is from the mouse, which is inversely proportional to the distance squared. (`this.particles[i].setXAccn(this.magnetism * (this.mouseX - this.particles[i].getXPos()) / (distance * distance));`) The x and y speeds are then incremented by the acceleration value and multiplied by the deceleration value.
+
+I then update the RGB values of each particle, if the randColour checkbox isn't ticked, and then run the colour particle and check death methods, so that the particles are displayed to the screen every frame.
+
+### Perlin Noise Method
+
+ This is fairly similar to the attractor method, but instead of calculating the distance between the mouse and particle for every particle, I calculate an angle, based on the output of the noise, the noise scale (predefined by myself as 1500, in order to get a smoother seed and less erratic movement), 2 pi and `this.particles[i].flip`, which turns the particle around if it spawns/ moves into a dead zone in the seed. 
+ I then interpolate the velocities between the current speed and the cosine/sine of the angle multiplied by the rate; which moves closer to the value by 40% every frame.
+ Finally update the position based on the particles' new speed, like with the attractor method. While also updating the colour, and running the check death method the same as the attractor method.
+
+ ## Run/ Draw method
+
+ I then have the run method (aka the draw method), which is called every frame. Firstly it checks whether the renderer is undefined or not and draws a black rectangle with a low alpha value, which makes the particles look like they appear to fade. 
+
+ The method then checks whether the mouse is not pressed and runs the Perlin Noise function and assigns runOnce to false (I will explain what this does later). If the mouse is pressed, it updates the mouseX and mouseY values and then checks whether the random colour checkbox is pressed, and runOnce is false, so it will update the colours of all of the particles so that each one is different. The this.runOnce is then used to make sure it only runs once rather than every frame the mouse button is held down.
+ After those checks, the attractor method is ran when the mouse is down.
+ The final check for the function is that if the renderer is assigned then it will update the image it is placed on. 
+
+ ### Clear Button Function
+
+ As with most of the other renderer checks, I have this section twice, so that the renderer can be defined. This clears the canvas, by changing the blend mode back to default, and draws a new rect over the canvas, and respawns all of the particles. 
+
+ ```javascript
+    clearButtonFunc () {
+
+        if (this.renderer === undefined) {
+
+            blendMode(BLEND);
+            fill(0, 0, 0);
+            rect(0, 0, this.width, this.height + 100);
+            for (let i = 0; i < this.total; i++) {
+
+                this.particles[i].respawn();
+
+            }
+
+        } else {
+
+            this.renderer.blendMode(BLEND);
+            this.renderer.fill(0, 0, 0);
+            this.renderer.rect(0, 0, this.width, this.Height);
+            for (let i = 0; i < this.total; i++) {
+
+                this.particles[i].respawn();
+
+            }
+
+        }
+
+    }
+ ```
+
+ ### Random Seed Button Function
+
+This randomises the noise seed by a factor of 100000 with `noiseSeed(random() * 100000)`, and returns the rounded value of this to be displayed on the screen. with `return Math.round(this.noiseSeed)`
+
+### Update Total Particles Function
+
+This takes in a parameter of value, which is the current slider value for total particles, which is sent across when the event is triggered (which is defined as when the slider changes). I then find out whether the current number of particles on the screen is too little/ too big, by finding which is bigger.
+If I need to make more particles I: 
+```javascript
+    for (let i = this.total; i < value; i++) {
+
+
+                this.particles[i] = new Particle({"xPos": Math.round(Math.random() * this.width),
+                    "yPos": Math.round(Math.random() * this.height),
+                    "xSpeed": 0,
+                    "ySpeed": 0,
+                    "xAccn": 0,
+                    "yAccn": 0,
+
+                    "red": this.r,
+                    "green": this.g,
+                    "blue": this.b,
+                    "size": this.radius});
+
+            }
+
+            this.total = value;
+
+```
+use the for loop from the current total up to the new total value and instantiate more each particle through each loop.
+If i need to remove particles I:
+``` javascript
+    else if (this.total > value) {
+
+            for (let i = this.total; i > value; i--) {
+
+                delete this.particles[i];
+
+            }
+            this.total = value;
+
+        }
+```
+Which loops from total to the new total, and deletes each instance of a particle between the two values.
+
+### Random Check Event Method 
+
+This only happens once when the run method switches from Perlin noise to attracting functions and when the random colour check box is ticked (hence the name of the function). The function uses a for loop to cycle through each particle and randomly generates an RGB value for the particle. Then finally sets the runOnce variable to true to stop trying to rerandomise the colour on the next frame. 
+```javascript
+        // When checked randomise colour with each click
+        for (let i = 0; i < this.total; i++) {
+
+            this.particles[i].setRed(Math.round(random(this.maxColour)));
+            this.particles[i].setGreen(Math.round(random(this.maxColour)));
+            this.particles[i].setBlue(Math.round(random(this.maxColour)));
+
+        }
+
+        this.runOnce = true;
+```
+### Change Blend Mode Function
+
+The last main method is used to cycle through the blend mode for the canvas. This is done through incrementing `this.blendChange`, after each click of the button and using a switch statement to check which `this.blendChange` value corresponds to which blendMode. I also return the name of the current blend mode in order for index.js to receive this and copy that text to the html page in order to display to the user what the current blend mode is. 
+As previously mentioned I have to account for this.renderer's parameter so I have a simple if statement which checks this and if it is defined it will do `this.renderer.blendMode` instead: 
+
+```javascript
+        else {
+
+            switch (this.blendChange % 12) {
+
+            default:
+                this.renderer.blendMode(BLEND);
+                return "Blend";
+            case 1:
+                this.renderer.blendMode(ADD);
+                return "Add";
+            case 2:
+                this.renderer.blendMode(LIGHTEST);
+                return "Lightest";
+            case 3:
+                this.renderer.blendMode(DIFFERENCE);
+                return "Difference";
+            case 4:
+                this.renderer.blendMode(EXCLUSION);
+                return "Exclusion";
+            case 5:
+                this.renderer.blendMode(MULTIPLY);
+                return "Multiply";
+            case 6:
+                this.renderer.blendMode(SCREEN);
+                return "Screen";
+            case 7:
+                this.renderer.blendMode(OVERLAY);
+                return "Overlay";
+            case 8:
+                this.renderer.blendMode(HARD_LIGHT);
+                return "Hard Light";
+            case 9:
+                this.renderer.blendMode(SOFT_LIGHT);
+                return "Soft Light";
+            case 10:
+                this.renderer.blendMode(DODGE);
+                return "Dodge";
+            case 11:
+                this.renderer.blendMode(BURN);
+                return "Burn";
+
+            } 
+        }  
+```
