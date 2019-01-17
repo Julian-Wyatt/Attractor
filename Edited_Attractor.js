@@ -1,20 +1,5 @@
 /* eslint no-undef:0*/
-/* eslint no-undefined:0*/
 /* eslint no-unused-vars:0*/
-/* eslint max-classes-per-file:0*/
-/* eslint max-len:0*/
-/* eslint max-statements:0*/
-/* eslint max-params:0*/
-/* eslint no-mixed-operators:0*/
-/* eslint max-lines:0*/
-/* eslint no-magic-numbers:0*/
-/* eslint max-lines-per-function:0*/
-/* eslint no-plusplus:0*/
-/* eslint id-length:0*/
-/* eslint sort-keys:0*/
-/* eslint no-lonely-if:0*/
-/* eslint complexity:0*/
-/* eslint no-else-return:0*/
 
 /*
  * Particle class in order to define attributes for each unqiue particle
@@ -22,15 +7,33 @@
  */
 
 
+/**
+ * @constructor
+ * @param  {numbers} {xPos  - x position of particles
+ * @param  {numbers} yPos   - y position of particles
+ * @param  {numbers} size   - size/ radius of particles
+ * @param  {numbers} xSpeed - x speed of the particles
+ * @param  {numbers} ySpeed - y speed of the particles
+ * @param  {numbers} xAccn  - x acceleration of particles
+ * @param  {numbers} yAccn  - y acceleration of particles
+ * @param  {numbers} red    - red attribute of RGB
+ * @param  {numbers} green  - green attribute of RGB
+ * @param  {numbers} blue   - blue attribute of RGB
+ * @param  {numbers} width  - width of screen
+ * @param  {numbers} height - height of screen
+ * @param  {numbers} renderer}   - optional renderer defined in construction of simulation class
+ * constructor used to instantiate particles and assign default values if specific params havent been defined
+ */
 class Particle {
 
-    constructor ({xPos, yPos, size, xSpeed, ySpeed, xAccn, yAccn, red, green, blue}) {
+    constructor ({xPos, yPos, size, xSpeed, ySpeed, xAccn, yAccn, red, green, blue, width, height, renderer}) {
 
+        this.renderer = renderer;
 
         if (this.renderer === undefined) {
 
-            this.mainHeight = windowHeight ;
-            this.mainWidth = windowWidth;
+            this.mainHeight = height || windowHeigh;
+            this.mainWidth = width || windowWidth;
 
         } else {
 
@@ -64,6 +67,12 @@ class Particle {
 
     }
 
+
+    /**
+     * @function
+     * @param  {numbers} attracting - is the draw method running attractor function
+     * checkDeath used to check death of particle by life span/ boundaries
+     */
     checkDeath (attracting) {
 
         if (attracting) {
@@ -82,7 +91,12 @@ class Particle {
 
     }
 
-
+    /**
+     * @function
+     * @param  {numbers} renderer - is the renderer defined in the setup of the Simulation class of the constructor which can be passed as a param into that constructor
+     * @param  {numbers} speedColour - is the boolean value of the speed Colour checkbox
+     * function used to colour particles depending on the two params provided
+     */
     colorParticle (renderer, speedColour) {
 
         if (renderer === undefined) {
@@ -128,7 +142,10 @@ class Particle {
 
     }
 
-
+    /**
+     * @function
+     * respawn used to respawn instance of particle at different position and assign it a new life length
+     */
     respawn () {
 
         this.currLife = random(this.maxLifeVal) + this.minLifeVal;
@@ -137,6 +154,10 @@ class Particle {
 
     }
 
+    /**
+     * @function
+     * see below where getters and setters are defined for all variables for Particles class
+     */
     getCurrLife () {
 
         return this.currLife;
@@ -261,7 +282,20 @@ class Particle {
 
 }
 
-
+/**
+ * @constructor
+ * @param  {numbers} {magnetism  - strength of attractive force
+ * @param  {numbers} deceleration- magnitude of deceleration of particles
+ * @param  {numbers} noiseScale  - used in noise function to recieve a wider range of random values
+ * @param  {numbers} renderer    - the optional renderer to allow project to be drawn on different image/canvas
+ * @param  {numbers} total       - total number of particles to instantiate at the start
+ * @param  {numbers} radius      - size of the particles
+ * @param  {numbers} rate        - speed of Perlin noise movement
+ * @param  {numbers} r    - red attribute of RGB
+ * @param  {numbers} g  - green attribute of RGB
+ * @param  {numbers} b   - blue attribute of RGB
+ * constructor used to instantiate main class for project which will perform attractor and perlin noise functions
+ */
 class Simulation {
 
     constructor ({magnetism, deceleration, noiseScale, renderer, total, radius, rate, r, g, b}) {
@@ -300,7 +334,7 @@ class Simulation {
         this.deceleration = deceleration || 0.95;
 
         this.particles = new Array(this.total);
-        this.noiseScale = noiseScale || int(random(800,2001));
+        this.noiseScale = noiseScale || int(random(800, 2001));
 
         this.mouseX = mouseX;
         this.mouseY = mouseY;
@@ -309,6 +343,7 @@ class Simulation {
 
         this.speedColour = false;
 
+        //instantiates initial particles
         for (let particle = 0; particle < this.total; particle++) {
 
             this.particles[particle] = new Particle({"xPos": Math.round(Math.random() * this.width),
@@ -317,7 +352,10 @@ class Simulation {
 
                 "red": 255,
                 "green": 0,
-                "blue": 0});
+                "blue": 0,
+                "renderer": this.renderer,
+                "height": this.height,
+                "width": this.width});
 
 
         }
@@ -327,7 +365,10 @@ class Simulation {
 
     }
 
-
+    /**
+     * @function
+     * general setup function used to initiate graphics related methods - which change depending on whether a canvas is provided
+     */
     setup () {
 
         if (this.renderer === undefined) {
@@ -359,6 +400,12 @@ class Simulation {
 
 
     }
+
+    /**
+     * @function
+     * attractor runs original attractor code, which moves paricles towards mouse position 
+     * has been updated to account for getters and setters
+     */
 
     attractor () {
 
@@ -401,6 +448,12 @@ class Simulation {
     }
 
 
+    /**
+     * @function
+     * perlin noise function randomly generates an angle for the particle to move based on the noise seed and noise scale
+     * Therefore when it switches to the attractor function (when the mouse is pressed), the particles are in a different (random) position
+     * used getters and setters
+     */
     perlinNoise () {
 
 
@@ -434,9 +487,21 @@ class Simulation {
 
     }
 
+    /**
+     * @function
+     * @param {Objects} renderer - optional p5 renderer - which allows renderer to be imported
+     * run is essentially the draw method
+     * draws a rectangle to get the particles to fade
+     * checks mouse up or down and runs perlin noise/ attractor functions accordingly
+     * also calls randomcheck event if that checkbox is ticked each time the mouse is clicked
+     */
+    run (renderer) {
 
-    run () {
+        if (renderer !== undefined) {
 
+            this.renderer = renderer;
+
+        }
         // Black rectangle which also gets trail to fade
 
         if (this.renderer === undefined) {
@@ -481,7 +546,7 @@ class Simulation {
             this.attractor();
 
 
-        } 
+        }
 
         if (this.renderer !== undefined) {
 
@@ -491,6 +556,10 @@ class Simulation {
 
     }
 
+    /**
+     * @function
+     * clears all drawing on screen by overlaying black rectangle and respawning particles
+     */
     clearButtonFunc () {
 
         if (this.renderer === undefined) {
@@ -519,7 +588,10 @@ class Simulation {
 
     }
 
-
+    /**
+     * @function
+     * updates the noise seed for the perlin noise function so particles move in a different random direction
+     */
     seedButtonFunc () {
 
         this.noiseSeed = random() * 100000;
@@ -529,6 +601,11 @@ class Simulation {
 
     }
 
+
+    /**
+     * @function
+     * update total particles finds difference between current total and the slider value and instantiates/ deletes particles accordingly
+     */
     updateTotalParticles (value) {
 
 
@@ -543,7 +620,10 @@ class Simulation {
                     "red": this.r,
                     "green": this.g,
                     "blue": this.b,
-                    "size": this.radius});
+                    "size": this.radius,
+                    "renderer": this.renderer,
+                    "height": this.height,
+                    "width": this.width});
 
             }
 
@@ -563,6 +643,10 @@ class Simulation {
 
     }
 
+    /**
+     * @function
+     * if the checkbox for random colours on click is checked, this will be ran after each click, which randomises the RGB of each particle
+     */
     randomCheckEvent () {
 
         // When checked randomise colour with each click
@@ -577,9 +661,12 @@ class Simulation {
         this.runOnce = true;
 
 
-
     }
 
+    /**
+     * @function
+     * when button to change blend mode is clicked, this function is ran, which cycles through every blend mode with a switch statement
+     */
     changeBlendMode () {
 
         this.blendChange++;
@@ -673,6 +760,10 @@ class Simulation {
 
     }
 
+    /**
+     * @function
+     * see below where getters and setters are defined for all variables for Particles class
+     */
     getNoiseSeed () {
 
         return this.noiseSeed;
