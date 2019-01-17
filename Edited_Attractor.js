@@ -354,7 +354,7 @@ class Simulation {
                 "green": 0,
                 "blue": 0,
                 "renderer": this.renderer,
-                "height": this.height,
+                "height": this.height+200,
                 "width": this.width});
 
 
@@ -622,7 +622,7 @@ class Simulation {
                     "blue": this.b,
                     "size": this.radius,
                     "renderer": this.renderer,
-                    "height": this.height,
+                    "height": this.height+200,
                     "width": this.width});
 
             }
