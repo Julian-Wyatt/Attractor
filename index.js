@@ -186,7 +186,11 @@ document.addEventListener("DOMContentLoaded",function(){
     let randomCheckbox = document.getElementById("randColour");
     
     function setRandColour(event){
-        attractor.setRandColour(randomCheckbox.checked);
+		if (randomCheckbox.checked){
+			speedCheckbox.checked = false;
+			attractor.setSpeedColour(speedCheckbox.checked);
+		}
+		attractor.setRandColour(randomCheckbox.checked);
         
     }
     randomCheckbox.addEventListener("change",setRandColour);
@@ -200,7 +204,11 @@ document.addEventListener("DOMContentLoaded",function(){
     let speedCheckbox = document.getElementById("speedColour");
     
     function setSpeedColour(event){
-        attractor.setSpeedColour(speedCheckbox.checked);
+		if (speedCheckbox.checked){
+			randomCheckbox.checked = false;
+			attractor.setRandColour(randomCheckbox.checked);
+		}
+		attractor.setSpeedColour(speedCheckbox.checked);
         
     }
     speedCheckbox.addEventListener("change",setSpeedColour);
